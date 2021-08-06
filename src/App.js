@@ -1,25 +1,50 @@
-import logo from './logo.svg';
-import './App.css';
+import {
+    BrowserRouter as Router,
+    Switch,
+    Route,
+    Link,
+    Redirect
+  } from "react-router-dom";
 
-function App() {
-  return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+  import Turnir from './Turnir';
+  import Krug from './Krug';
+  import Setka from './Setka';
+  
+  import './App.scss';
+
+
+  const Menu = () => (
+    <ul className="menu">
+        <li><Link to="/krug">Круговой формат</Link></li>
+        <li><Link to="/turnir">Турнир</Link></li>
+        <li><Link to="/setka">Сетка</Link></li>
+    </ul>
   );
-}
 
-export default App;
+
+
+  
+  export default function App() {
+    return (
+      <div className="app">
+        <Router>
+          <Switch>
+            <Route exact path="/">
+              <Menu />
+            </Route>
+            <Route exact path="/krug">
+              <Krug />
+            </Route>
+            <Route exact path="/turnir">
+              <Turnir />
+            </Route>
+            <Route exact path="/setka">
+              <Setka />
+            </Route>
+            <Redirect from="/" exact to="/" />
+          </Switch>
+        </Router>
+      </div>
+    );
+  }
+  
