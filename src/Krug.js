@@ -6,8 +6,8 @@ const Krug = () => {
 
     const [value, setValue] = useState('');
     const [numOfRound, setNumOfRound] = useState(1);
-    const [teams, setTeams] = useState(['Арсенал', 'Барселона', 'Валенсия']);
-    // const [teams, setTeams] = useState(['Арсенал', 'Барселона', 'Валенсия', 'Галатасарай']);
+    // const [teams, setTeams] = useState(['Арсенал', 'Барселона', 'Валенсия']);
+    const [teams, setTeams] = useState(['Арсенал', 'Барселона', 'Валенсия', 'Галатасарай']);
     // const [teams, setTeams] = useState(['Арсенал', 'Барселона', 'Валенсия', 'Галатасарай', 'Динамо']);
 
     // const [teams, setTeams] = useState(['Арсенал', 'Барселона', 'Валенсия', 'Галатасарай', 'Динамо', 'Екатеринбург']);
@@ -108,32 +108,52 @@ const Krug = () => {
         const round = [];
         const tour = [];
         let pop = [];
+        let tourNum = teams.length / 2;
+        let tn = 1;
 
-        
-        for (let i = 0; i < home.length + away.length - 1; i++) {
-            for (let j = 0; j < home.length; j++) {
-                round.push({
-                    home: home[j],
-                    away: away[j]
-                });	
-            }    	
-            
-            if (home.length + away.length - 1 > 2) {
-                const splicedHomeTeam = home.splice(1, 1);
-                const splicedHomeTeamShifted = splicedHomeTeam.shift();
-                const poppedAwayTeam = away.pop();
-                away.unshift(splicedHomeTeamShifted);
-                home.push(poppedAwayTeam);
+        for (let n = 0; n < numOfRound; n++) {
+           
+            for (let i = 0; i < home.length + away.length - 1; i++) {
+                    
+                    for (let j = 0; j < home.length; j++) {
+                        
+                        round.push({
+                            home: home[j],
+                            away: away[j],
+                            tour: j % tourNum === 0 ? tn : null
+                        });	
+                        
+                        
+                    }    	
+                    tn++;
+                
+                
+                
+                if (home.length + away.length - 1 > 2) {
+                    const splicedHomeTeam = home.splice(1, 1);
+                    const splicedHomeTeamShifted = splicedHomeTeam.shift();
+                    const poppedAwayTeam = away.pop();
+                    away.unshift(splicedHomeTeamShifted);
+                    home.push(poppedAwayTeam);
+                }
             }
+                
+            
+            
+
             pop = round.splice(0, round.length);
-            tour.push(pop)
-            pop.splice()
-            round.splice()
-
+            tour.push(pop);
+            pop.splice();
+            round.splice();
+            
+            
+            
         }
-        
+
         
 
+
+        // console.log(tour);
         
 
         // this is for each team playing home and away equally  
@@ -200,9 +220,11 @@ const Krug = () => {
                                 schedule.map((obj, i) => {
                                     return (
                                         [...Object.values(obj)].map((pair, index) => { 
+                                            console.log(pair);
                                             return (
                                                 <>
-                                                {index === 0 ? <div className="tour" key={`tour_${i}`}>{`${i + 1} тур`}</div> : null }
+                                                {index === 0 ? <div className="round" key={`round_${i}`}>{`${i + 1} круг`}</div> : null }
+                                                {pair.tour !== null ? <div className="tour" key={`tour_${i}`}>{`${pair.tour} тур`}</div> : null }
                                                 <div ref={scheduleItem}  className={pair.home === SKIP_TOUR ? 'schedule-item miss' : 'schedule-item'}  key={`${pair}_${index}`}><div onClick={e => colorTeam(e)}>{pair.home}</div>{pair.home === SKIP_TOUR ? null : <span onClick={e => switchTeams(e)}><svg height="512" viewBox="0 0 512 512" width="512"><g><path d="m92.69 216c6.23 6.24 16.39 6.24 22.62 0l20.69-20.69c6.24-6.23 6.24-16.39 0-22.62l-20.69-20.69h284.69c26.47 0 48 21.53 48 48 0 13.23 10.77 24 24 24h16c13.23 0 24-10.77 24-24 0-61.76-50.24-112-112-112h-284.69l20.69-20.69c6.24-6.23 6.24-16.39 0-22.62l-20.69-20.69c-6.23-6.24-16.39-6.24-22.62 0l-90.35 90.34c-3.12 3.13-3.12 8.19 0 11.32z"/><path d="m419.31 296c-6.23-6.24-16.38-6.24-22.62 0l-20.69 20.69c-6.252 6.252-6.262 16.358 0 22.62l20.69 20.69h-284.69c-26.47 0-48-21.53-48-48 0-13.23-10.77-24-24-24h-16c-13.23 0-24 10.77-24 24 0 61.76 50.24 112 112 112h284.69l-20.69 20.69c-6.252 6.252-6.262 16.358 0 22.62l20.69 20.69c6.241 6.241 16.38 6.24 22.62 0l90.35-90.34c3.12-3.13 3.12-8.19 0-11.32z"/></g></svg></span>}<div onClick={e => colorTeam(e)}>{pair.away}</div></div>
                                                 </>
                                             )
