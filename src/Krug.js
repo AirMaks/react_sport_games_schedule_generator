@@ -91,17 +91,19 @@ const Krug = () => {
         }
 
         if (e.target.parentNode.classList.contains('pair')) {
-            
+            let targetClassName = e.target.className;
             [...pair].map(el => {
                 [...el.childNodes].map(item => {
-                    if (item.classList.contains(e.target.className)) {
-                        if (item.style.backgroundColor === 'rgb(243, 219, 105)') {
-                            item.style.backgroundColor = 'rgb(255, 255, 255)'
+    
+                        if (item.className === targetClassName) {
+                            
+                        if (item.classList.contains('colored')) {
+                            item.classList.remove('colored')
                         } else {
-                            item.style.backgroundColor = 'rgb(243, 219, 105)';
+                            item.classList.add('colored')
                             
                         }
-                        
+                
                     }
 
                     return true;
@@ -112,19 +114,19 @@ const Krug = () => {
             });
         }
 
-        [...all].map(el => {
+        // [...all].map(el => {
            
 
-            if (el.style.backgroundColor === 'rgb(243, 219, 105)') {
-                cnt++;
-            }  
+        //     if (el.className === 'rgb(243, 219, 105)') {
+        //         cnt++;
+        //     }  
             
-            return true;
-        });
+        //     return true;
+        // });
 
-        if (cnt <= 0) {
-            setClicked(false)
-        }
+        // if (cnt <= 0) {
+        //     setClicked(false)
+        // }
 
     }
 
@@ -134,20 +136,31 @@ const Krug = () => {
 
     const switchTeams = e => {
    
-        if (clicked) {
-            if (e.target.parentNode.children[0].style.backgroundColor === 'rgb(243, 219, 105)' && e.target.parentNode.children[2].style.backgroundColor !== 'rgb(243, 219, 105)') {
-                e.target.parentNode.children[0].style.backgroundColor = "rgb(255, 255, 255)";
-                e.target.parentNode.children[2].style.backgroundColor = "rgb(243, 219, 105)";
-            } else if(e.target.parentNode.children[0].style.backgroundColor === 'rgb(243, 219, 105)' && e.target.parentNode.children[2].style.backgroundColor === 'rgb(243, 219, 105)') {
-                e.target.parentNode.children[0].style.backgroundColor = "rgb(243, 219, 105)";
-                e.target.parentNode.children[2].style.backgroundColor = "rgb(243, 219, 105)";
-            } else if (e.target.parentNode.children[0].style.backgroundColor !== 'rgb(255, 255, 255)' && e.target.parentNode.children[2].style.backgroundColor !== 'rgb(255, 255, 255)') {
+        // if (clicked) {
+            // if (e.target.parentNode.children[0].style.backgroundColor === 'rgb(243, 219, 105)' && e.target.parentNode.children[2].style.backgroundColor !== 'rgb(243, 219, 105)') {
+            //     e.target.parentNode.children[0].style.backgroundColor = "rgb(255, 255, 255)";
+            //     e.target.parentNode.children[2].style.backgroundColor = "rgb(243, 219, 105)";
+            // } else if(e.target.parentNode.children[0].style.backgroundColor === 'rgb(243, 219, 105)' && e.target.parentNode.children[2].style.backgroundColor === 'rgb(243, 219, 105)') {
+            //     e.target.parentNode.children[0].style.backgroundColor = "rgb(243, 219, 105)";
+            //     e.target.parentNode.children[2].style.backgroundColor = "rgb(243, 219, 105)";
+            // } else if (e.target.parentNode.children[0].style.backgroundColor !== 'rgb(255, 255, 255)' && e.target.parentNode.children[2].style.backgroundColor !== 'rgb(255, 255, 255)') {
 
-console.log('cl');
-                e.target.parentNode.children[2].style.backgroundColor = "rgb(255, 255, 255)";
-                e.target.parentNode.children[0].style.backgroundColor = "rgb(243, 219, 105)";
-            }
-        }
+            //     e.target.parentNode.children[2].style.backgroundColor = "rgb(255, 255, 255)";
+            //     e.target.parentNode.children[0].style.backgroundColor = "rgb(243, 219, 105)";
+            // }
+
+            // if (e.target.parentNode.children[0].classList.contains('colored') && !e.target.parentNode.children[2].classList.contains('colored')) {
+            //     e.target.parentNode.children[0].classList.remove('colored');
+            //     e.target.parentNode.children[2].classList.add('colored');
+            // } else if(e.target.parentNode.children[0].classList.contains('colored') && e.target.parentNode.children[2].classList.contains('colored')) {
+            //     e.target.parentNode.children[0].classList.add('colored');
+            //     e.target.parentNode.children[2].classList.add('colored');
+            // } else if (e.target.parentNode.children[0].classList.contains('colored') && e.target.parentNode.children[2].classList.contains('colored')) {
+
+            //     e.target.parentNode.children[2].classList.remove('colored');
+            //     e.target.parentNode.children[0].classList.add('colored');
+            // }
+        // }
          
 
         [e.target.parentNode.children[0].innerHTML, e.target.parentNode.children[2].innerHTML] = [e.target.parentNode.children[2].innerHTML, e.target.parentNode.children[0].innerHTML];
