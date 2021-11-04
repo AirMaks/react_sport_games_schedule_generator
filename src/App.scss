@@ -84,6 +84,9 @@ ul.teams-list {
 }
 
 .schedule {
+
+  display: flex;
+  justify-content: space-between;
   .schedule-item {
     display: flex;
     margin-bottom: 10px;
@@ -94,30 +97,39 @@ ul.teams-list {
     div {
       padding: 10px 20px;
       border: 2px solid #000;
-      background-color: #fff;
+      background-color: rgb(255, 255, 255);
       border-radius: 5px;
-      width: 50%;
+      width: 45%;
+      display: flex;
+      justify-content: center;
+      align-items: center;
 
       &.colored {
         background-color: rgb(243, 219, 105);
       }
     }
+    
 
     &.miss {
       border: 2px solid #000;
-      background-color: rgb(255, 255, 255);
+      background-color: #ccc;
       color: #000;
       border-radius: 5px;
+
+      &.colored {
+        background-color: rgb(243, 219, 105) !important;
+      }
       div {
         border: 0;
         border-radius: 0;
-        background-color: #ccc;
         text-align: right;
         padding-right: 5px;
+        width: 100%;
+        display: block;
+        background-color: transparent;
 
-        &.colored {
-          background-color: rgb(243, 219, 105);
-        }
+        
+       
 
         
 
@@ -141,8 +153,9 @@ ul.teams-list {
 
     span {
       display: flex;
-      padding: 0 15px;
       align-items: center;
+      justify-content: center;
+      width: 10%;
 
       svg {
         display: block;
@@ -157,7 +170,7 @@ ul.teams-list {
 
 .round {
   max-width: 300px;
-  background-color: #c00;
+  background-color: #000;
   border-radius: 5px;
   border: 2px solid #000;
   display: flex;
@@ -165,9 +178,16 @@ ul.teams-list {
   justify-content: center;
   margin: 60px auto 0; 
   padding: 10px;
-  color: #fff;
+  color: rgb(255, 255, 255);
 }
 
+h2 {
+  text-align: center;
+  font-size: 36px;
+}
+.round-wrapper {
+  width: 44%;
+}
 ul.menu {
   position: absolute;
   max-width: 500px;
