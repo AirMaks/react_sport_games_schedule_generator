@@ -51,6 +51,8 @@ ul.teams-list {
     font-weight: 300;
     margin-bottom: 10px;
     text-transform: capitalize;
+    position: relative;
+    display: flex;
 
     &:last-child {
       margin-bottom: 0;
@@ -60,6 +62,14 @@ ul.teams-list {
       display: inline-block;
       margin-right: 4px;
       font-weight: 500;
+    }
+
+    span.del-btn {
+      position: absolute;
+      right: 0;
+      top: 2px;
+      font-size: 11px;
+      cursor: pointer;
     }
   }
 }
@@ -93,7 +103,7 @@ ul.teams-list {
     cursor: pointer;
 
 
-
+    
     div {
       padding: 10px 20px;
       border: 2px solid #000;
@@ -103,9 +113,50 @@ ul.teams-list {
       display: flex;
       justify-content: center;
       align-items: center;
+      position: relative;
+
+      &:hover {
+
+        span.color-box {
+          display: block;
+        }
+        
+      }
+      span.color-box {
+        position: absolute;
+        right: 4px;
+        top: 3px;
+        border: 1px solid #000;
+        border-radius: 4px;
+        width: 12px;
+        height: 12px;
+        display: block;
+        background-color: #fff;
+
+        display: none;
+
+        
+      }
+
+      &:first-child {
+        span {
+          left: 4px;
+          right: unset;
+        }
+      }
+
 
       &.colored {
         background-color: rgb(243, 219, 105);
+      }
+
+
+      div {
+        border: 0;
+        padding: 0;
+        pointer-events: none;
+      background: transparent;
+       
       }
     }
     
@@ -116,27 +167,54 @@ ul.teams-list {
       color: #000;
       border-radius: 5px;
 
-      &.colored {
-        background-color: rgb(243, 219, 105) !important;
+      span {
+        &.color-box {
+          background-color: #ccc;
+        }
       }
+       div {
+       
+        &.colored {
+          background-color: rgb(243, 219, 105) !important;
+        }
+
+        
+      }
+
+      
+      
       div {
         border: 0;
         border-radius: 0;
-        text-align: right;
         padding-right: 5px;
         width: 100%;
         display: block;
         background-color: transparent;
+        position: relative;
 
+        &:first-child {
+
+          div {
+            text-align: right;
+          }
+          
+        }
+
+        &:first-child {
+
+          div {
+            text-align: right;
+          }
+          
+        }
+
+        
         
        
 
         
 
-        &:last-child{
-          text-align: left;
-          padding-left: 5px;
-        }
+       
       }
     }
 
@@ -187,6 +265,11 @@ h2 {
 }
 .round-wrapper {
   width: 44%;
+  margin-right: 30px; 
+
+  &:last-child {
+    margin-right: 0;
+  }
 }
 ul.menu {
   position: absolute;

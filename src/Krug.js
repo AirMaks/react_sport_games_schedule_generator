@@ -1,5 +1,6 @@
 import { useState, useRef } from "react";
 import {shuffle, transliterate} from './helpers';
+import TeamsList from "./TeamsList";
 
 
 const Krug = () => {
@@ -11,14 +12,14 @@ const Krug = () => {
     // const [teams, setTeams] = useState(['Арсенал', 'Барселона', 'Валенсия', 'Галатасарай', 'Динамо']);
 
     // const [teams, setTeams] = useState(['Арсенал', 'Барселона', 'Валенсия', 'Галатасарай', 'Динамо', 'Екатеринбург']);
-    const [teams, setTeams] = useState(['Арсенал', 'Барселона', 'Валенсия', 'Галатасарай', 'Динамо', 'Екатеринбург', 'Жилина']);
+    // const [teams, setTeams] = useState(['Арсенал', 'Барселона', 'Валенсия', 'Галатасарай', 'Динамо', 'Екатеринбург', 'Жилина']);
     // const [teams, setTeams] = useState(['Арсенал', 'Барселона', 'Валенсия', 'Галатасарай', 'Динамо', 'Екатеринбург', 'Жилина', 'Загреб']);
 
     // const [teams, setTeams] = useState(['Арсенал', 'Барселона', 'Валенсия', 'Галатасарай', 'Динамо', 'Екатеринбург', 'Жилина', 'Загреб', 'Интер']);
     // const [teams, setTeams] = useState(['Арсенал', 'Барселона', 'Валенсия', 'Галатасарай', 'Динамо', 'Екатеринбург', 'Жилина', 'Загреб', 'Интер', 'Копенгаген']);
     // const [teams, setTeams] = useState(['Арсенал', 'Барселона', 'Валенсия', 'Галатасарай', 'Динамо', 'Екатеринбург', 'Жилина', 'Загреб', 'Интер', 'Копенгаген', 'Рапид']);
     // const [teams, setTeams] = useState(['Арсенал', 'Барселона', 'Валенсия', 'Галатасарай', 'Динамо', 'Екатеринбург', 'Жилина', 'Загреб', 'Интер', 'Копенгаген', 'Рапид', 'Paok']);
-    // const [teams, setTeams] = useState(['Арсенал', 'Барселона', 'Валенсия', 'Галатасарай', 'Динамо', 'Екатеринбург', 'Жилина', 'Загреб', 'Интер', 'Копенгаген', 'Рапид', 'Paok', 'Dortmund']);
+    const [teams, setTeams] = useState(['Арсенал', 'Барселона', 'Валенсия', 'Галатасарай', 'Динамо', 'Екатеринбург', 'Жилина', 'Загреб', 'Интер', 'Копенгаген', 'Рапид', 'Paok', 'Dortmund']);
     // const [teams, setTeams] = useState(['Арсенал', 'Барселона', 'Валенсия', 'Галатасарай', 'Динамо', 'Екатеринбург', 'Жилина', 'Загреб', 'Интер', 'Копенгаген', 'Рапид', 'Paok', 'Dortmund', 'Celtic']);
     // const [teams, setTeams] = useState(['Арсенал', 'Барселона', 'Валенсия', 'Галатасарай', 'Динамо', 'Екатеринбург', 'Жилина', 'Загреб', 'Интер', 'Копенгаген', 'Рапид', 'Paok', 'Dortmund', 'Celtic', 'Gent']);
     // const [teams, setTeams] = useState(['Арсенал', 'Барселона', 'Валенсия', 'Галатасарай', 'Динамо', 'Екатеринбург', 'Жилина', 'Загреб', 'Интер', 'Копенгаген', 'Рапид', 'Paok', 'Dortmund', 'Celtic', 'Gent', 'Spartak']);
@@ -35,7 +36,7 @@ const Krug = () => {
     // const [teams, setTeams] = useState(['Арсенал', 'Барселона', 'Валенсия', 'Галатасарай', 'Динамо', 'Екатеринбург', 'Жилина', 'Загреб', 'Интер', 'Копенгаген', 'Рапид', 'Paok', 'Dortmund', 'Celtic', 'Gent', 'Spartak', 'Rostov', 'Rubin', 'PSG', 'Man City', 'Bordeaux', 'Monaco', 'Kamaz', 'Glazgo', 'Nant', 'Nice', 'Lille']);
     const [schedule, setSchedule] = useState([]);
     const [shuffleTeams, setShuffleTeams] = useState(false);
-    const [clicked, setClicked] = useState(false);
+    
     const inputRef = useRef(null);
     const scheduleItems = useRef(null);
 
@@ -69,108 +70,96 @@ const Krug = () => {
         setShuffleTeams(false);
     }
 
-    const colorTeamOnClick = (e) => {
+    const clearColors = () => {
+        let missItems = document.querySelectorAll('.schedule .schedule-item.miss');
+        let pairItems = document.querySelectorAll('.schedule .schedule-item.pair');
+        [...missItems].map(el => {
 
-        setClicked(true)
-        let miss = document.querySelectorAll('.schedule .schedule-item.miss');
-        let pair = document.querySelectorAll('.schedule .schedule-item.pair');
-        let all = document.querySelectorAll('.schedule .schedule-item div');
-        let cnt = 0;
-        
-
-        if (e.target.parentNode.classList.contains('miss')) {   
-            [...miss].map(el => {
-
-                if (el.classList.contains('colored')) {
-                    el.classList.remove('colored')
-                } else {
-                    el.classList.add('colored')
-                }
-                return true;
-            });
-        }
-
-        if (e.target.parentNode.classList.contains('pair')) {
-            let targetClassName = e.target.className;
-            [...pair].map(el => {
-                [...el.childNodes].map(item => {
-    
-                        if (item.className === targetClassName) {
-                            
-                        if (item.classList.contains('colored')) {
-                            item.classList.remove('colored')
-                        } else {
-                            item.classList.add('colored')
-                            
-                        }
-                
-                    }
-
-                    return true;
-                })
-
-                return true;
-                
-            });
-        }
-
-        // [...all].map(el => {
            
+            [...el.childNodes].map(item => {
 
-        //     if (el.className === 'rgb(243, 219, 105)') {
-        //         cnt++;
-        //     }  
-            
-        //     return true;
-        // });
+                item.style.backgroundColor = "#ccc";
+               
+                
+                return true;
+            })
+            return true;
+        });
 
-        // if (cnt <= 0) {
-        //     setClicked(false)
-        // }
+        [...pairItems].map(el => {
 
+           
+            [...el.childNodes].map(item => {
+
+                item.style.backgroundColor = "#fff";
+               
+                
+                return true;
+            })
+            return true;
+        });
     }
 
+    const clearColor = (e) => {
+        let allItems = document.querySelectorAll('.schedule .schedule-item');
+        [...allItems].map(el => { 
    
-    
-  
+            [...el.childNodes].map(item => {
+                
+                if (item.className === e.target.parentNode.className && item.tagName === 'DIV' && item.previousSibling && !item.previousSibling.classList.contains('propuskaet_tur')) {
+                    item.style.backgroundColor = '#fff';
+                } else if (item.className === e.target.parentNode.className && item.tagName === 'DIV' && item.previousSibling && item.previousSibling.classList.contains('propuskaet_tur')) {
+                    item.style.backgroundColor = '#ccc';
+                }
+
+                if (item.className === e.target.parentNode.className && item.tagName === 'DIV' && item.nextSibling && !item.nextSibling.classList.contains('propuskaet_tur')) {
+                    item.style.backgroundColor = '#fff';
+                } else if (item.className === e.target.parentNode.className && item.tagName === 'DIV' && item.nextSibling && item.nextSibling.classList.contains('propuskaet_tur')) {
+                    item.style.backgroundColor = '#ccc';
+                }
+
+                if(e.target.parentNode.classList.contains('propuskaet_tur') && item.className === e.target.parentNode.className) {
+                    item.style.backgroundColor = '#ccc';
+                } 
+
+                return true;
+            })
+            return true;
+        });
+    }
+
+    const colorTeamOnClick = (e) => {
+        
+        let allItems = document.querySelectorAll('.schedule .schedule-item');
+        let targetClassName = e.target.className;
+        var randomColor = "#"+Math.floor(Math.random()*16777215).toString(16);
+        [...allItems].map(el => { 
+   
+            [...el.childNodes].map(item => {
+                
+                if (item.className === targetClassName && item.tagName === 'DIV') {
+                    item.style.backgroundColor = randomColor;
+                }
+
+                return true;
+            })
+
+            return true;
+        });
+    }
+
 
     const switchTeams = e => {
-   
-        // if (clicked) {
-            // if (e.target.parentNode.children[0].style.backgroundColor === 'rgb(243, 219, 105)' && e.target.parentNode.children[2].style.backgroundColor !== 'rgb(243, 219, 105)') {
-            //     e.target.parentNode.children[0].style.backgroundColor = "rgb(255, 255, 255)";
-            //     e.target.parentNode.children[2].style.backgroundColor = "rgb(243, 219, 105)";
-            // } else if(e.target.parentNode.children[0].style.backgroundColor === 'rgb(243, 219, 105)' && e.target.parentNode.children[2].style.backgroundColor === 'rgb(243, 219, 105)') {
-            //     e.target.parentNode.children[0].style.backgroundColor = "rgb(243, 219, 105)";
-            //     e.target.parentNode.children[2].style.backgroundColor = "rgb(243, 219, 105)";
-            // } else if (e.target.parentNode.children[0].style.backgroundColor !== 'rgb(255, 255, 255)' && e.target.parentNode.children[2].style.backgroundColor !== 'rgb(255, 255, 255)') {
-
-            //     e.target.parentNode.children[2].style.backgroundColor = "rgb(255, 255, 255)";
-            //     e.target.parentNode.children[0].style.backgroundColor = "rgb(243, 219, 105)";
-            // }
-
-            // if (e.target.parentNode.children[0].classList.contains('colored') && !e.target.parentNode.children[2].classList.contains('colored')) {
-            //     e.target.parentNode.children[0].classList.remove('colored');
-            //     e.target.parentNode.children[2].classList.add('colored');
-            // } else if(e.target.parentNode.children[0].classList.contains('colored') && e.target.parentNode.children[2].classList.contains('colored')) {
-            //     e.target.parentNode.children[0].classList.add('colored');
-            //     e.target.parentNode.children[2].classList.add('colored');
-            // } else if (e.target.parentNode.children[0].classList.contains('colored') && e.target.parentNode.children[2].classList.contains('colored')) {
-
-            //     e.target.parentNode.children[2].classList.remove('colored');
-            //     e.target.parentNode.children[0].classList.add('colored');
-            // }
-        // }
-         
-
-        [e.target.parentNode.children[0].innerHTML, e.target.parentNode.children[2].innerHTML] = [e.target.parentNode.children[2].innerHTML, e.target.parentNode.children[0].innerHTML];
+        [e.target.parentNode.children[0].children[0].textContent, e.target.parentNode.children[2].children[0].textContent] = [e.target.parentNode.children[2].children[0].textContent, e.target.parentNode.children[0].children[0].textContent];
         [e.target.parentNode.children[0].className, e.target.parentNode.children[2].className] = [e.target.parentNode.children[2].className, e.target.parentNode.children[0].className];
-        [e.target.parentNode.children[0].id, e.target.parentNode.children[2].id] = [e.target.parentNode.children[2].id, e.target.parentNode.children[0].id];
+        [e.target.parentNode.children[0].style.backgroundColor, e.target.parentNode.children[2].style.backgroundColor] = [e.target.parentNode.children[2].style.backgroundColor, e.target.parentNode.children[0].style.backgroundColor];
     }
 
-    const scheduler = (e) => {
+    const scheduler = (e) => { 
 
         e.target.innerHTML = 'Перемешать';
+
+        clearColors();
         if (shuffleTeams) shuffle(teams); 
         
         const tempo = teams.slice();
@@ -183,18 +172,25 @@ const Krug = () => {
         let pop = [];
         let tourNum = teams.length / 2;
         let tn = 1;
-    
-        
+
+
         for (let n = 0; n < numOfRound; n++) {
 
-            
             for (let i = 0; i < home.length + away.length - 1; i++) {
-
-                
                     
-                    for (let j = 0; j < home.length; j++) {
+                for (let j = 0; j < home.length; j++) {
 
-                        if (n % 2 === 0) {
+                    if (n % 2 === 0) {
+                        round.push({
+                            home: home[j],
+                            away: away[j],
+                            tour: j % tourNum === 0 ? tn : null,
+                            id: tn,
+                            
+                        });	
+                    } else {
+
+                        if (home[j] === 'Пропускает тур:') {
                             round.push({
                                 home: home[j],
                                 away: away[j],
@@ -202,34 +198,19 @@ const Krug = () => {
                                 id: tn
                             });	
                         } else {
-
-                            if (home[j] === 'Пропускает тур:') {
-                                round.push({
-                                    home: home[j],
-                                    away: away[j],
-                                    tour: j % tourNum === 0 ? tn : null,
-                                    id: tn
-                                });	
-                            } else {
-                                round.push({
-                                    home: away[j],
-                                    away: home[j],
-                                    tour: j % tourNum === 0 ? tn : null,
-                                    id: tn
-                                });	
-                            }
-                            
+                            round.push({
+                                home: away[j],
+                                away: home[j],
+                                tour: j % tourNum === 0 ? tn : null,
+                                id: tn
+                            });	
                         }
-                     
                         
-                        
-                        
-                        
-                        
-                    }    	
+                    }
                     
-                    tn++;
-                
+                }    	
+                    
+                tn++;
                     
                 
                 if (home.length + away.length - 1 > 2) {
@@ -239,19 +220,14 @@ const Krug = () => {
                     away.unshift(splicedHomeTeamShifted);
                     home.push(poppedAwayTeam);
                 }
-
-                
                
             }
 
-            
-
+       
             pop = round.splice(0, round.length);
             tour.push(pop);
             pop.splice();
             round.splice();
-            
-            
             
         }
 
@@ -267,18 +243,13 @@ const Krug = () => {
         //             if (index % 2 === 0) [t.home, t.away] = [t.away, t.home]; 
         //             if (index === 0 && i === 1) [t.home, t.away] = [t.away, t.home];
                     
-        //         } else  {
-        //             if (teams.length > 5) {
-        //                 if(index % 2 === 0 && i === 1) [t.home, t.away] = [t.away, t.home];
-        //                 if(index % 2 !== 0 && i !== 0) [t.home, t.away] = [t.away, t.home];
-        //             }
         //         }
         //         return true;
         //     })
         //     return true;
         // })
-        
 
+        
         
         setSchedule([...tour])
         setShuffleTeams(true);
@@ -294,9 +265,7 @@ const Krug = () => {
         <h1>Круговой формат</h1>
         <div className="wrapper"> 
         { teams.length > 0 
-            ? <ul className="teams-list">
-                { teams.map((team, index) => <li className="team-item" key={`${index}_team`}><span>{`${index + 1}.`}</span>{`${team}`}</li>) }
-            </ul>
+            ? <TeamsList teams={teams}/>
             : null }
             
             <div className="wrapper-container">
@@ -319,34 +288,61 @@ const Krug = () => {
                             <h2>Расписание матчей</h2>
                             <div className="schedule" >
                                 
-                            { schedule.map((obj, i) => {
+                        {   schedule.map((obj, i) => (
+                            <div className="round-wrapper" id={`round-round${i}`} key={`round-round${i}`}>
+                            {[...Object.values(obj)].map((pair, index) => {
                                 return (
-                                        <div className="round-wrapper" key={`schedule_${i}`} >
-                                        {[...Object.values(obj)].map((pair, index) => {
-                                            return (
-                                                <>
-                                                    {index === 0 ? <div className="round" key={`round_${i}_${index}`}>{`${i + 1} круг`}</div> : null }
-                                                    {pair.tour !== null ? <div className="tour" key={`tour_${i}_${index}`}>{`${pair.tour} тур`}</div> : null }
-                                                    <div ref={scheduleItems} className={pair.home === SKIP_TOUR ? 'schedule-item miss' : 'schedule-item pair'}  key={`${pair.home}_${index}_${pair.tour}`}>
-                                                        <div className={`${transliterate(pair.home)}`} id={`${transliterate(pair.home)}_${pair.id}`} key={`${transliterate(pair.home)}_${pair.id}`} onClick={e => colorTeamOnClick(e)}>{pair.home}</div>
-                                                        {pair.home === SKIP_TOUR ? null : 
-                                                            <span key={`${pair.tour}_span`} onClick={e => switchTeams(e)}>
-                                                                <svg height="512" viewBox="0 0 512 512" width="512"><g><path d="m92.69 216c6.23 6.24 16.39 6.24 22.62 0l20.69-20.69c6.24-6.23 6.24-16.39 0-22.62l-20.69-20.69h284.69c26.47 0 48 21.53 48 48 0 13.23 10.77 24 24 24h16c13.23 0 24-10.77 24-24 0-61.76-50.24-112-112-112h-284.69l20.69-20.69c6.24-6.23 6.24-16.39 0-22.62l-20.69-20.69c-6.23-6.24-16.39-6.24-22.62 0l-90.35 90.34c-3.12 3.13-3.12 8.19 0 11.32z"/><path d="m419.31 296c-6.23-6.24-16.38-6.24-22.62 0l-20.69 20.69c-6.252 6.252-6.262 16.358 0 22.62l20.69 20.69h-284.69c-26.47 0-48-21.53-48-48 0-13.23-10.77-24-24-24h-16c-13.23 0-24 10.77-24 24 0 61.76 50.24 112 112 112h284.69l-20.69 20.69c-6.252 6.252-6.262 16.358 0 22.62l20.69 20.69c6.241 6.241 16.38 6.24 22.62 0l90.35-90.34c3.12-3.13 3.12-8.19 0-11.32z"/></g></svg>
-                                                            </span>}
-                                                            
-                                                        <div className={`${transliterate(pair.away)}`} id={`${transliterate(pair.away)}_${pair.id}`} key={`${transliterate(pair.away)}_${pair.id}`} onClick={e => colorTeamOnClick(e)}>{pair.away}</div>
-                                                    </div>
-                                                </>
-                                            )
-                                        }
-                                        )}
-                                        </div>
-                                        
-                                    )
-                                }) 
-                                        
+                                    <>
+                                        {index === 0 ? <div id={`round_${i}_${index}`} className="round" key={`round_${i}_${index}`}>{`${i + 1} круг`}</div> : null }
+                                        {pair.tour !== null ? <div id={`tour_${i}_${index}`} className="tour" key={`tour_${i}_${index}`}>{`${pair.tour} тур`}</div> : null }
 
+                                        <div 
+                                            id={`${transliterate(pair.home)}_${index}_${pair.tour}`} 
+                                            ref={scheduleItems} 
+                                            className={pair.home === SKIP_TOUR ? 'schedule-item miss' : 'schedule-item pair'}  
+                                            key={`${transliterate(pair.home)}_${index}_${pair.tour}`}
+                                        >
+                                            <div 
+                                                className={`${transliterate(pair.home)}`} 
+                                                id={`${transliterate(pair.home)}_${pair.id}`} 
+                                                key={`${transliterate(pair.home)}_${pair.id}`} 
+                                                onClick={e => colorTeamOnClick(e)}
+                                            >
+                                                <div 
+                                                    id={`${transliterate(pair.home)}_${pair.id}_DIV`} 
+                                                    key={`${transliterate(pair.home)}_${pair.id}_DIV`}>{pair.home}</div>
+                                                <span 
+                                                    id={`${transliterate(pair.home)}_${pair.id}_SPAN`} 
+                                                    key={`${transliterate(pair.home)}_${pair.id}_SPAN`} 
+                                                    className="color-box" onClick={e => clearColor(e)}></span>
+                                            </div>
+                                            {pair.home === SKIP_TOUR ? null : 
+                                                <span id={`${pair.tour}_span`} key={`${pair.tour}_span`} onClick={e => switchTeams(e)}>
+                                                    <svg id={`${transliterate(pair.home)}${pair.tour}_svg`} key={`${pair.tour}_svg`} height="512" viewBox="0 0 512 512" width="512"><g><path d="m92.69 216c6.23 6.24 16.39 6.24 22.62 0l20.69-20.69c6.24-6.23 6.24-16.39 0-22.62l-20.69-20.69h284.69c26.47 0 48 21.53 48 48 0 13.23 10.77 24 24 24h16c13.23 0 24-10.77 24-24 0-61.76-50.24-112-112-112h-284.69l20.69-20.69c6.24-6.23 6.24-16.39 0-22.62l-20.69-20.69c-6.23-6.24-16.39-6.24-22.62 0l-90.35 90.34c-3.12 3.13-3.12 8.19 0 11.32z"/><path d="m419.31 296c-6.23-6.24-16.38-6.24-22.62 0l-20.69 20.69c-6.252 6.252-6.262 16.358 0 22.62l20.69 20.69h-284.69c-26.47 0-48-21.53-48-48 0-13.23-10.77-24-24-24h-16c-13.23 0-24 10.77-24 24 0 61.76 50.24 112 112 112h284.69l-20.69 20.69c-6.252 6.252-6.262 16.358 0 22.62l20.69 20.69c6.241 6.241 16.38 6.24 22.62 0l90.35-90.34c3.12-3.13 3.12-8.19 0-11.32z"/></g></svg>
+                                                </span>}
+                                                
+                                            <div 
+                                                className={`${transliterate(pair.away)}`} 
+                                                id={`${transliterate(pair.away)}_${pair.id}`} 
+                                                key={`${transliterate(pair.away)}_${pair.id}`} 
+                                                onClick={e => colorTeamOnClick(e)}>
+                                                    <div 
+                                                        id={`${transliterate(pair.away)}_${pair.id}_DIV`}
+                                                        key={`${transliterate(pair.away)}_${pair.id}_DIV`}>{pair.away}</div> 
+                                                    <span 
+                                                        id={`${transliterate(pair.away)}_${pair.id}_SPAN`} 
+                                                        key={`${transliterate(pair.away)}_${pair.id}_SPAN`} 
+                                                        className="color-box" 
+                                                        onClick={e => clearColor(e)}></span>
+                                            </div>
+                                        </div>
+                                    </>
+                                )
                             }
+                            )}
+                            </div>
+                            )) 
+                        }
                             </div>
                         </>
                     ) : null }
