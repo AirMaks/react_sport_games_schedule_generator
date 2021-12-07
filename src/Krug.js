@@ -7,18 +7,8 @@ const Krug = () => {
 
     const [value, setValue] = useState('');
     const [numOfRound, setNumOfRound] = useState(1);
-    // const [teams, setTeams] = useState(['Арсенал', 'Барселона', 'Валенсия']);
-    // const [teams, setTeams] = useState(['Арсенал', 'Барселона', 'Валенсия', 'Галатасарай']);
-    // const [teams, setTeams] = useState(['Арсенал', 'Барселона', 'Валенсия', 'Галатасарай', 'Динамо']);
 
-    // const [teams, setTeams] = useState(['Арсенал', 'Барселона', 'Валенсия', 'Галатасарай', 'Динамо', 'Екатеринбург']);
-    // const [teams, setTeams] = useState(['Арсенал', 'Барселона', 'Валенсия', 'Галатасарай', 'Динамо', 'Екатеринбург', 'Жилина']);
-    // const [teams, setTeams] = useState(['Арсенал', 'Барселона', 'Валенсия', 'Галатасарай', 'Динамо', 'Екатеринбург', 'Жилина', 'Загреб']);
 
-    // const [teams, setTeams] = useState(['Арсенал', 'Барселона', 'Валенсия', 'Галатасарай', 'Динамо', 'Екатеринбург', 'Жилина', 'Загреб', 'Интер']);
-    // const [teams, setTeams] = useState(['Арсенал', 'Барселона', 'Валенсия', 'Галатасарай', 'Динамо', 'Екатеринбург', 'Жилина', 'Загреб', 'Интер', 'Копенгаген']);
-    // const [teams, setTeams] = useState(['Арсенал', 'Барселона', 'Валенсия', 'Галатасарай', 'Динамо', 'Екатеринбург', 'Жилина', 'Загреб', 'Интер', 'Копенгаген', 'Рапид']);
-    // const [teams, setTeams] = useState(['Арсенал', 'Барселона', 'Валенсия', 'Галатасарай', 'Динамо', 'Екатеринбург', 'Жилина', 'Загреб', 'Интер', 'Копенгаген', 'Рапид', 'Paok']);
     const [teams, setTeams] = useState(['Арсенал', 'Барселона', 'Валенсия', 'Галатасарай', 'Динамо', 'Екатеринбург', 'Жилина', 'Загреб', 'Интер', 'Копенгаген', 'Рапид', 'Paok', 'Dortmund']);
     // const [teams, setTeams] = useState(['Арсенал', 'Барселона', 'Валенсия', 'Галатасарай', 'Динамо', 'Екатеринбург', 'Жилина', 'Загреб', 'Интер', 'Копенгаген', 'Рапид', 'Paok', 'Dortmund', 'Celtic']);
     // const [teams, setTeams] = useState(['Арсенал', 'Барселона', 'Валенсия', 'Галатасарай', 'Динамо', 'Екатеринбург', 'Жилина', 'Загреб', 'Интер', 'Копенгаген', 'Рапид', 'Paok', 'Dortmund', 'Celtic', 'Gent']);
@@ -179,34 +169,68 @@ const Krug = () => {
             for (let i = 0; i < home.length + away.length - 1; i++) {
                     
                 for (let j = 0; j < home.length; j++) {
+                    
+                        if (n % 2 === 0) {
 
-                    if (n % 2 === 0) {
-                        round.push({
-                            home: home[j],
-                            away: away[j],
-                            tour: j % tourNum === 0 ? tn : null,
-                            id: tn,
-                            
-                        });	
-                    } else {
-
-                        if (home[j] === 'Пропускает тур:') {
-                            round.push({
-                                home: home[j],
-                                away: away[j],
-                                tour: j % tourNum === 0 ? tn : null,
-                                id: tn
-                            });	
+                            if (home[j] !== 'Пропускает тур:') {
+                                if (i % 2 === 0) {
+                                    round.push({
+                                        home: home[j],
+                                        away: away[j],
+                                        tour: j % tourNum === 0 ? tn : null,
+                                        id: tn,
+                                        
+                                    });
+                                } else {
+                                    round.push({
+                                        home: away[j],
+                                        away: home[j],
+                                        tour: j % tourNum === 0 ? tn : null,
+                                        id: tn,
+                                        
+                                    });
+                                }
+                               	
+                            } else {
+                                round.push({
+                                    home: home[j],
+                                    away: away[j],
+                                    tour: j % tourNum === 0 ? tn : null,
+                                    id: tn,
+                                    
+                                });
+                            }
                         } else {
-                            round.push({
-                                home: away[j],
-                                away: home[j],
-                                tour: j % tourNum === 0 ? tn : null,
-                                id: tn
-                            });	
+    
+                            if (home[j] === 'Пропускает тур:') {
+                                
+                                    round.push({
+                                        home: home[j],
+                                        away: away[j],
+                                        tour: j % tourNum === 0 ? tn : null,
+                                        id: tn
+                                    });	
+                            } else {
+                                if (i % 2 === 0) {
+                                    round.push({
+                                        home: away[j],
+                                        away: home[j],
+                                        tour: j % tourNum === 0 ? tn : null,
+                                        id: tn
+                                    });	
+                                } else {
+                                    round.push({
+                                        home: home[j],
+                                        away: away[j],
+                                        tour: j % tourNum === 0 ? tn : null,
+                                        id: tn
+                                    });	
+                                }
+                            }
+                            
                         }
-                        
-                    }
+                    
+                    
                     
                 }    	
                     
@@ -235,19 +259,83 @@ const Krug = () => {
 
 
         // this is for each team playing home and away equally  
-        // [...tour].map((el, index) => {
-        //     [...el].map((t, i) => {
+        [...tour].map(el => {
 
-        //         if (teams.length % 2 === 0) {
+            [...el].map((t, i) => {
 
-        //             if (index % 2 === 0) [t.home, t.away] = [t.away, t.home]; 
-        //             if (index === 0 && i === 1) [t.home, t.away] = [t.away, t.home];
-                    
-        //         }
-        //         return true;
-        //     })
-        //     return true;
-        // })
+                if (teams.length === 3) {
+                    if (i === 3) {
+                        [t.home, t.away] = [t.away, t.home];
+                    }
+                }
+
+                if (teams.length === 4) {
+                    if (i === 3) {
+                        [t.home, t.away] = [t.away, t.home];
+                    }
+                }
+
+                if (teams.length === 5) {
+                    if (i === 2 || i === 14) {
+                        [t.home, t.away] = [t.away, t.home];
+                    }
+                }
+
+                if (teams.length === 6) {
+                    if (i === 14) {
+                        [t.home, t.away] = [t.away, t.home];
+                    }
+                }
+
+                if (teams.length === 7) {
+                    if (i === 1 || i === 7 ||  i === 23 || i === 25) {
+                        [t.home, t.away] = [t.away, t.home];
+                    }
+                }
+
+                if (teams.length === 8) {
+                    if (i === 1 || i === 7) {
+                        [t.home, t.away] = [t.away, t.home];
+                    }
+                }
+
+                if (teams.length === 9) {
+                    if (i === 3 || i === 9 ||  i === 19 ||  i === 36 || i === 42 ) {
+                        [t.home, t.away] = [t.away, t.home];
+                    }
+                }
+
+                if (teams.length === 10) {
+                    if (i === 1 || i === 3 || i === 9) {
+                        [t.home, t.away] = [t.away, t.home];
+                    }
+                }
+
+                if (teams.length === 11) {
+                    if ( i === 5 || i === 35 || i === 47 || i === 62  || i === 65) {
+                        [t.home, t.away] = [t.away, t.home];
+                    }
+                }
+
+                if (teams.length === 12) {
+                    if (i === 1 || i === 3 || i === 5) {
+                        [t.home, t.away] = [t.away, t.home];
+                    }
+                }
+
+                if (teams.length === 13) {
+                    // if ( i === 4 || i === 34 || i === 46 || i === 61  || i === 64) {
+                    //     [t.home, t.away] = [t.away, t.home];
+                    // }
+                }
+               
+                
+                return true;
+            })
+
+
+            return true;
+        })
 
         
         
