@@ -1,12 +1,13 @@
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect, useCallback } from "react";
 import {shuffle, transliterate} from './helpers';
 import TeamsList from "./TeamsList";
+import {PDFExport, savePDF} from "@progress/kendo-react-pdf";
 
 
 const Krug = () => {
 
     const [value, setValue] = useState('');
-    const [numOfRound, setNumOfRound] = useState(1);
+    const [numOfRound, setNumOfRound] = useState("");
 
 
     const [teams, setTeams] = useState(['Арсенал', 'Барселона', 'Валенсия', 'Галатасарай', 'Динамо', 'Екатеринбург', 'Жилина', 'Загреб', 'Интер', 'Копенгаген', 'Рапид', 'Paok', 'Dortmund']);
@@ -28,13 +29,32 @@ const Krug = () => {
     const [shuffleTeams, setShuffleTeams] = useState(false);
     
     const inputRef = useRef(null);
+    const inputRef2 = useRef(null);
     const scheduleItems = useRef(null);
 
+    const TITLE = "Round - robin tournament schedule generator online";
+
+    
+
     const SKIP_TOUR = 'Пропускает тур:';
+    // let TITLE = "Round - robin tournament schedule generator online";
+    
+ 
+    const pdfExportComponent = useRef(null);
+    const contentArea = useRef(null);
+
+    const handleExportWithComponent = (event) => {
+        savePDF(contentArea.current, {paperSize: "A4", margin: { top: 20, left: 20, right: 20, bottom: 20}})
+    }
+
+   
 
     const addTeam = () => {
         inputRef.current.focus();
+        
+
         if (value !== '') {
+            
             setValue('');
             if (teams.map(el => el.toLowerCase().trim()).includes(value.trim().split(/\s+/).join(' '))) {
                 setValue(value.trim().split(/\s+/).join(' '));
@@ -42,15 +62,25 @@ const Krug = () => {
                 return false;
             }
             setTeams(prevArr => [...prevArr, value.trim().split(/\s+/).join(' ')]);
+        } else {
+            inputRef.current.style.borderColor = "#c00";
         }
     }
 
     const handleChange = e => {
+        inputRef.current.style.borderColor = "#ccc";
         setValue(e.target.value)
     }
 
     const handleRoundChange = e => {
-        setNumOfRound(+e.target.value);
+
+        inputRef2.current.style.borderColor = "#ccc";
+        if (e.target.value !== "") {
+            setNumOfRound(+e.target.value);
+        } else {
+            setNumOfRound("");
+        }
+        
     }
 
     const clear = () => {
@@ -147,7 +177,15 @@ const Krug = () => {
 
     const scheduler = (e) => { 
 
-        e.target.innerHTML = 'Перемешать';
+        if (numOfRound != 1 && numOfRound != 2 && numOfRound != 3 && numOfRound != 4) {
+            inputRef2.current.style.borderColor = "#c00";
+            return false
+        } 
+
+
+        e.target.innerHTML = 'Mix up';
+
+        
 
         clearColors();
         if (shuffleTeams) shuffle(teams); 
@@ -343,14 +381,24 @@ const Krug = () => {
         setShuffleTeams(true);
 
         
+        
+           
+        
+            
+    
        
     }
 
     
+    
 
     return (
         <>
-        <h1>Круговой формат</h1>
+        {/* <div className="lang">
+            <div onClick={() => switchLangToRus()} className="en">EN</div>
+            <div onClick={switchLangToEn} className="ru">RU</div>
+        </div> */}
+        <h1>{TITLE}</h1>
         <div className="wrapper"> 
         { teams.length > 0 
             ? <TeamsList teams={teams}/>
@@ -358,25 +406,36 @@ const Krug = () => {
             
             <div className="wrapper-container">
                 <div className="container">
-                    <input ref={inputRef} type="text" placeholder="Введите название команды" onChange={e => handleChange(e)} value={value}/>
-                    <input type="text" placeholder="Введите кол-во кругов" onChange={e => handleRoundChange(e)} value={numOfRound}/>
-                    <button onClick={addTeam}>Добавить</button>
+                    <input ref={inputRef} type="text" placeholder="Enter the team name" onChange={e => handleChange(e)} value={value}/>
+                    <button className="btn-add" onClick={addTeam}>Add team</button>
                     { teams.length > 2 
-                        ? <button onClick={e => scheduler(e)}>Генерировать расписание</button>
+                        ? <input ref={inputRef2} id="round" type="text" placeholder="Enter the number of rounds" onChange={e => handleRoundChange(e)} value={numOfRound === 0 || !numOfRound ? "" : numOfRound}/>
+                        : null }
+                    
+                    
+                    { teams.length > 2 
+                        ? <button className="generate-btn" onClick={e => scheduler(e)}>Generate schedule</button>
                         : null }
 
                     { teams.length > 0 
-                        ? <button onClick={clear}>Очистить</button>
+                        ? <button className="clear-btn" onClick={clear}>Clear all</button>
                         : null }
+
+                    { teams.length > 2 
+                        ? <button className="save-pdf" onClick={handleExportWithComponent}>Save PDF</button>
+                        : null }
+
+
                     
                 </div>
             
                 { schedule.length > 0 ? (
                         <>
-                            <h2>Расписание матчей</h2>
-                            <div className="schedule" >
+                            <h2>Schedule</h2>
+                            <PDFExport ref={pdfExportComponent} paperSize="A4" scale={0.6} landscape={false} mobile={true}>
+                            <div id="sect" className="schedule" ref={contentArea}>
                                 
-                        {   schedule.map((obj, i) => (
+                            {   schedule.map((obj, i) => (
                             <div className="round-wrapper" id={`round-round${i}`} key={`round-round${i}`}>
                             {[...Object.values(obj)].map((pair, index) => {
                                 return (
@@ -432,6 +491,10 @@ const Krug = () => {
                             )) 
                         }
                             </div>
+
+                            
+                            </PDFExport>
+                            
                         </>
                     ) : null }
             
@@ -440,6 +503,7 @@ const Krug = () => {
         </div>
         </>
     )
+    
 }
 
 
