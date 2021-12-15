@@ -1,8 +1,9 @@
-import { useState, useRef, useEffect, useCallback } from "react";
+import { useState, useRef} from "react";
 import {shuffle, transliterate} from './helpers';
 import TeamsList from "./TeamsList";
 import {PDFExport, savePDF} from "@progress/kendo-react-pdf";
-
+import {isMobile} from 'react-device-detect';
+import Lightbox from "react-image-lightbox";
 
 const Krug = () => {
 
@@ -30,14 +31,22 @@ const Krug = () => {
     
     const inputRef = useRef(null);
     const inputRef2 = useRef(null);
+    const saveBtnRef = useRef(null);
     const scheduleItems = useRef(null);
-
+    const useChromeRef = useRef(null);
     const TITLE = "Round - robin tournament schedule generator online";
 
-    
-
+    const images = [
+        "img/1.PNG",
+        "img/2.PNG",
+        "img/3.PNG",
+        "img/4.PNG",
+        "img/5.PNG",
+        "img/6.PNG"
+      ];
+    const [photoIndex, setPhotoIndex] = useState(0);
+    const [isOpen, setIsOpen] = useState(false);
     const SKIP_TOUR = 'Пропускает тур:';
-    // let TITLE = "Round - robin tournament schedule generator online";
     
  
     const pdfExportComponent = useRef(null);
@@ -53,7 +62,7 @@ const Krug = () => {
         inputRef.current.focus();
         
 
-        if (value !== '') {
+        if (value.trim() !== '') {
             
             setValue('');
             if (teams.map(el => el.toLowerCase().trim()).includes(value.trim().split(/\s+/).join(' '))) {
@@ -63,9 +72,12 @@ const Krug = () => {
             }
             setTeams(prevArr => [...prevArr, value.trim().split(/\s+/).join(' ')]);
         } else {
+            setValue('');
             inputRef.current.style.borderColor = "#c00";
         }
     }
+
+    
 
     const handleChange = e => {
         inputRef.current.style.borderColor = "#ccc";
@@ -175,18 +187,21 @@ const Krug = () => {
         [e.target.parentNode.children[0].style.backgroundColor, e.target.parentNode.children[2].style.backgroundColor] = [e.target.parentNode.children[2].style.backgroundColor, e.target.parentNode.children[0].style.backgroundColor];
     }
 
-    const scheduler = (e) => { 
-
-        if (numOfRound != 1 && numOfRound != 2 && numOfRound != 3 && numOfRound != 4) {
+    const scheduler = () => { 
+      
+        if (numOfRound !== 1 && numOfRound !== 2 && numOfRound !== 3 && numOfRound !== 4) {
             inputRef2.current.style.borderColor = "#c00";
             return false
         } 
 
+        if (saveBtnRef.current) {
+            saveBtnRef.current.classList.remove('disabled');
+        }
 
-        e.target.innerHTML = 'Mix up';
-
+        if (useChromeRef.current) {
+            useChromeRef.current.classList.remove('hidden');
+        }
         
-
         clearColors();
         if (shuffleTeams) shuffle(teams); 
         
@@ -294,8 +309,6 @@ const Krug = () => {
         }
 
 
-
-
         // this is for each team playing home and away equally  
         [...tour].map(el => {
 
@@ -370,51 +383,61 @@ const Krug = () => {
                 
                 return true;
             })
-
-
             return true;
         })
-
-        
         
         setSchedule([...tour])
         setShuffleTeams(true);
-
-        
-        
-           
-        
-            
-    
-       
     }
 
-    
+
+    const removeTeam = e => {
+        [...teams].map((_, index) => {
+            if (index === -1) return;
+            if (teams.length < 4) return;
+            return index === teams.indexOf(e.target.parentNode.childNodes[1].textContent) ? teams.splice(index, 1) : null;
+        })
+        setTeams([...teams])
+    }
+
+    const handleKeyDown = (event) => {
+        if (event.key === 'Enter') {
+            if (value.trim() !== '') {
+                addTeam();
+            } else {
+                setValue('');
+                inputRef.current.style.borderColor = "#c00";
+            }
+        }
+    }
+      
+      
     
 
     return (
         <>
-        {/* <div className="lang">
-            <div onClick={() => switchLangToRus()} className="en">EN</div>
-            <div onClick={switchLangToEn} className="ru">RU</div>
-        </div> */}
         <h1>{TITLE}</h1>
         <div className="wrapper"> 
         { teams.length > 0 
-            ? <TeamsList teams={teams}/>
+            ? <TeamsList teams={teams} removeTeam={removeTeam}/>
             : null }
             
             <div className="wrapper-container">
                 <div className="container">
-                    <input ref={inputRef} type="text" placeholder="Enter the team name" onChange={e => handleChange(e)} value={value}/>
-                    <button className="btn-add" onClick={addTeam}>Add team</button>
+                    <input ref={inputRef} onKeyDown={handleKeyDown} type="text" placeholder="Enter the team name" onChange={e => handleChange(e)} value={value}/>
+                    <button className="btn-add" onClick={addTeam} >Add team</button>
                     { teams.length > 2 
-                        ? <input ref={inputRef2} id="round" type="text" placeholder="Enter the number of rounds" onChange={e => handleRoundChange(e)} value={numOfRound === 0 || !numOfRound ? "" : numOfRound}/>
+                        ? <select required id="round" ref={inputRef2} onChange={e => handleRoundChange(e)} value={numOfRound === 0 || !numOfRound ? "" : numOfRound}>
+                            <option defaultValue="" value="">Choose the number of rounds</option>
+                            <option value="1">1</option>
+                            <option value="2">2</option>
+                            <option value="3">3</option>
+                            <option value="4">4</option>
+                        </select>
                         : null }
                     
-                    
                     { teams.length > 2 
-                        ? <button className="generate-btn" onClick={e => scheduler(e)}>Generate schedule</button>
+                        ? <button className="generate-btn" onClick={() => scheduler()}>Generate schedule</button>
                         : null }
 
                     { teams.length > 0 
@@ -422,18 +445,42 @@ const Krug = () => {
                         : null }
 
                     { teams.length > 2 
-                        ? <button className="save-pdf" onClick={handleExportWithComponent}>Save PDF</button>
+                        ?   <div className="save-pdf-container">
+                                <button ref={saveBtnRef} className="save-pdf disabled" onClick={handleExportWithComponent}>Save PDF</button>
+                                {
+                                    isMobile ? 
+                                    <div ref={useChromeRef} className="use-chrome-container hidden">
+                                    <div className="use-chrome">Use chrome browser and google drive to save PDF</div> 
+                                    <button type="button" className="how-to-use" onClick={() => setIsOpen(true)}>How to use google drive?</button> 
+                                    {isOpen && (
+                                    <Lightbox
+                                        enableZoom={false}
+                                        mainSrc={images[photoIndex]}
+                                        nextSrc={images[(photoIndex + 1) % images.length]}
+                                        prevSrc={images[(photoIndex + images.length - 1) % images.length]}
+                                        onCloseRequest={() => setIsOpen(false)}
+                                        onMovePrevRequest={() =>
+                                        setPhotoIndex((photoIndex + images.length - 1) % images.length)
+                                        }
+                                        onMoveNextRequest={() =>
+                                        setPhotoIndex( (photoIndex + 1) % images.length)
+                                        }
+                                    />
+                                    )}
+                                    </div>
+                                    : null
+                                }
+                            </div>
                         : null }
 
 
                     
                 </div>
-            
                 { schedule.length > 0 ? (
                         <>
-                            <h2>Schedule</h2>
+                            <h2 >Schedule</h2>
                             <PDFExport ref={pdfExportComponent} paperSize="A4" scale={0.6} landscape={false} mobile={true}>
-                            <div id="sect" className="schedule" ref={contentArea}>
+                            <div className="schedule" ref={contentArea}>
                                 
                             {   schedule.map((obj, i) => (
                             <div className="round-wrapper" id={`round-round${i}`} key={`round-round${i}`}>

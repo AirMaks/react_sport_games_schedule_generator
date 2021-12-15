@@ -1,9 +1,10 @@
+import React, {Fragment} from 'react';
+
 import {
     BrowserRouter as Router,
-    Switch,
+    Routes,
     Route,
-    Link,
-    Redirect
+    Link
   } from "react-router-dom";
 
   import Turnir from './Turnir';
@@ -28,21 +29,14 @@ import {
     return (
       <div className="app">
         <Router>
-          <Switch>
-            <Route exact path="/">
-              <Menu />
-            </Route>
-            <Route exact path="/krug">
-              <Krug />
-            </Route>
-            <Route exact path="/turnir">
-              <Turnir />
-            </Route>
-            <Route exact path="/setka">
-              <Setka />
-            </Route>
-            <Redirect from="/" exact to="/" />
-          </Switch>
+          <Fragment>
+            <Routes>
+                <Route exact path='/' element={<Menu/>}/>
+                <Route exact path='/krug' element={<Krug/>} />
+                <Route exact path='/turnir' element={<Turnir/>} />
+                <Route exact path='/setka' element={<Setka/>}/>
+            </Routes>
+          </Fragment>
         </Router>
       </div>
     );
