@@ -53,7 +53,7 @@ const Krug = () => {
     const contentArea = useRef(null);
 
     const handleExportWithComponent = (event) => {
-        savePDF(contentArea.current, {paperSize: "A4", margin: { top: 20, left: 20, right: 20, bottom: 20}})
+        savePDF(contentArea.current, {paperSize: "A4", scale: 0.8, margin: { top: 20, left: 25, right: 0, bottom: 20}})
     }
 
    
@@ -393,11 +393,11 @@ const Krug = () => {
 
     const removeTeam = e => {
         [...teams].map((_, index) => {
-            if (index === -1) return;
-            if (teams.length < 4) return;
-            return index === teams.indexOf(e.target.parentNode.childNodes[1].textContent) ? teams.splice(index, 1) : null;
+            if (index === -1) return false;
+            if (teams.length < 4) return false;
+            return index === teams.indexOf(e.target.parentNode.childNodes[1].textContent) ? teams.splice(index, 1) : false;
         })
-        setTeams([...teams])
+        setTeams([...teams]);
     }
 
     const handleKeyDown = (event) => {
@@ -475,13 +475,14 @@ const Krug = () => {
 
 
                     
-                </div>
+                </div> 
                 { schedule.length > 0 ? (
                         <>
-                            <h2 >Schedule</h2>
-                            <PDFExport ref={pdfExportComponent} paperSize="A4" scale={0.6} landscape={false} mobile={true}>
+                        
+                        <PDFExport ref={pdfExportComponent} paperSize="A4" scale={1} landscape={false} mobile={true}>
+                            
                             <div className="schedule" ref={contentArea}>
-                                
+                            <h2>Schedule</h2> 
                             {   schedule.map((obj, i) => (
                             <div className="round-wrapper" id={`round-round${i}`} key={`round-round${i}`}>
                             {[...Object.values(obj)].map((pair, index) => {
