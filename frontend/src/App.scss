@@ -36,11 +36,11 @@ body {
 }
 
 .app {
-  padding: 70px 0;
+  // padding: 70px 0;
 
-  @media screen and (max-width: 600px) {
-      padding: 45px 0;
-  }
+  // @media screen and (max-width: 600px) {
+  //     padding: 45px 0;
+  // }
 }
 .wrapper {
   max-width: 100%;
@@ -165,7 +165,17 @@ ul.teams-list {
     }
   }
 }
+.tournaments-list {
+  li {
+    display: flex;
+    margin-bottom: 12px;
 
+    span {
+      display: block;
+      margin-right: 10px;
+    }
+  }
+}
 .wrapper-container {
   position: relative;
   width: 80%;
@@ -173,8 +183,15 @@ ul.teams-list {
       width: 100%;
   }
 }
+.brand {
+  color: #fff;
+  text-decoration: none;
 
-.container {
+  &:hover {
+    color: #ccc;
+  }
+}
+.container-2 {
 
   display: flex;
   justify-content: space-between;

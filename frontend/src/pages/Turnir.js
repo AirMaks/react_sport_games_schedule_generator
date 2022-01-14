@@ -5,4 +5,4 @@ const Turnir = () => {
     )
 }
 
-export default Turnir; 
+export default Turnir;

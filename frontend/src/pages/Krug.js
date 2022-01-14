@@ -1,6 +1,6 @@
 import { useState, useRef} from "react";
-import {shuffle, transliterate} from './helpers';
-import TeamsList from "./TeamsList";
+import {shuffle, transliterate} from '../helpers';
+import TeamsList from "../components/TeamsList.js";
 import {PDFExport, savePDF} from "@progress/kendo-react-pdf";
 import {isMobile} from 'react-device-detect';
 import Lightbox from "react-image-lightbox";
@@ -416,14 +416,14 @@ const Krug = () => {
 
     return (
         <>
-        <h1>{TITLE}</h1>
+        <h1 className="mt-5 mb-5">{TITLE}</h1>
         <div className="wrapper"> 
         { teams.length > 0 
             ? <TeamsList teams={teams} removeTeam={removeTeam}/>
             : null }
             
             <div className="wrapper-container">
-                <div className="container">
+                <div className="container-2">
                     <input ref={inputRef} onKeyDown={handleKeyDown} type="text" placeholder="Enter the team name" onChange={e => handleChange(e)} value={value}/>
                     <button className="btn-add" onClick={addTeam} >Add team</button>
                     { teams.length > 2 
