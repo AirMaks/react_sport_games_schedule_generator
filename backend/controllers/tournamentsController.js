@@ -22,7 +22,7 @@ class TournamentsController {
     async getOne(req, res) {
         const {id} = req.params;
 
-        const tournament = await Tournaments.findOne({where: {id}, });
+        const tournament = await Tournaments.findOne({where: {id}});
 
         return res.json(tournament);
     }

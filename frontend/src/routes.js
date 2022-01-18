@@ -3,7 +3,6 @@ import {
     LOGIN_ROUTE,
     REGISTRATION_ROUTE, 
     TOURNAMENTS_ROUTE, 
-    TOURNAMENT_ROUTE, 
     MENU_ROUTE,
     TURNIR_ROUTE,
     KRUG_ROUTE,
@@ -16,7 +15,7 @@ import {
  import Turnir from './pages/Turnir';
  import Auth from './pages/Auth';
  import Krug from './pages/Krug';
- import TournamentsList from './components/TournamentsList';
+ import TournamentsPage from './pages/TournamentsPage';
  import Admin from './pages/Admin';
  import TournamentPage from './pages/TournamentPage';
 
@@ -26,28 +25,24 @@ export const authRoutes = [
         Component: Admin
     },
     {
+        path: TOURNAMENTS_ROUTE + '/:id',
+        Component: TournamentPage
+    },
+    {
         path: TOURNAMENTS_ROUTE,
-        Component: TournamentsList
+        Component: TournamentsPage
     },
     {
         path: MENU_ROUTE,
         Component: Menu
     },
-    {
-        path: TOURNAMENTS_ROUTE + '/:id',
-        Component: TournamentPage
-    },
+    
 ];
 
+
+
 export const publicRoutes = [
-    {
-        path: LOGIN_ROUTE,
-        Component: Auth
-    },
-    {
-        path: REGISTRATION_ROUTE,
-        Component: Auth
-    },
+    
     {
         path: MENU_ROUTE,
         Component: Menu
@@ -55,6 +50,14 @@ export const publicRoutes = [
     {
         path: KRUG_ROUTE,
         Component: Krug
+    },
+    {
+        path: LOGIN_ROUTE,
+        Component: Auth
+    },
+    {
+        path: REGISTRATION_ROUTE,
+        Component: Auth
     },
     {
         path: TURNIR_ROUTE,

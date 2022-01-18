@@ -1,31 +1,33 @@
-import { useState, useRef} from "react";
+import { useState, useRef, useContext, useEffect} from "react";
 import {shuffle, transliterate} from '../helpers';
 import TeamsList from "../components/TeamsList.js";
 import {PDFExport, savePDF} from "@progress/kendo-react-pdf";
 import {isMobile} from 'react-device-detect';
 import Lightbox from "react-image-lightbox";
+import { Context } from "../index";
+import { createTeam, fetchTeams } from "../http/teamsAPI";
+import Button from 'react-bootstrap/Button'
+import Form from 'react-bootstrap/Form'
+import { observer } from "mobx-react-lite";
 
-const Krug = () => {
+const Krug = observer(() => {
 
     const [value, setValue] = useState('');
-    const [numOfRound, setNumOfRound] = useState("");
+    const [numOfRound, setNumOfRound] = useState('');
 
+    const {teams} = useContext(Context);
+    const [teamsLen, setTeamsLen] = useState(0);
+    
+    useEffect(() => {
+        fetchTeams().then(data => {
+            
+            teams.setTeams([...data]);
+            setTeamsLen(data.length);
+        })
+    }, []);
 
-    const [teams, setTeams] = useState(['Арсенал', 'Барселона', 'Валенсия', 'Галатасарай', 'Динамо', 'Екатеринбург', 'Жилина', 'Загреб', 'Интер', 'Копенгаген', 'Рапид', 'Paok', 'Dortmund']);
-    // const [teams, setTeams] = useState(['Арсенал', 'Барселона', 'Валенсия', 'Галатасарай', 'Динамо', 'Екатеринбург', 'Жилина', 'Загреб', 'Интер', 'Копенгаген', 'Рапид', 'Paok', 'Dortmund', 'Celtic']);
-    // const [teams, setTeams] = useState(['Арсенал', 'Барселона', 'Валенсия', 'Галатасарай', 'Динамо', 'Екатеринбург', 'Жилина', 'Загреб', 'Интер', 'Копенгаген', 'Рапид', 'Paok', 'Dortmund', 'Celtic', 'Gent']);
-    // const [teams, setTeams] = useState(['Арсенал', 'Барселона', 'Валенсия', 'Галатасарай', 'Динамо', 'Екатеринбург', 'Жилина', 'Загреб', 'Интер', 'Копенгаген', 'Рапид', 'Paok', 'Dortmund', 'Celtic', 'Gent', 'Spartak']);
-    // const [teams, setTeams] = useState(['Арсенал', 'Барселона', 'Валенсия', 'Галатасарай', 'Динамо', 'Екатеринбург', 'Жилина', 'Загреб', 'Интер', 'Копенгаген', 'Рапид', 'Paok', 'Dortmund', 'Celtic', 'Gent', 'Spartak', 'Rostov']);
-    // const [teams, setTeams] = useState(['Арсенал', 'Барселона', 'Валенсия', 'Галатасарай', 'Динамо', 'Екатеринбург', 'Жилина', 'Загреб', 'Интер', 'Копенгаген', 'Рапид', 'Paok', 'Dortmund', 'Celtic', 'Gent', 'Spartak', 'Rostov', 'Rubin']);
-    // const [teams, setTeams] = useState(['Арсенал', 'Барселона', 'Валенсия', 'Галатасарай', 'Динамо', 'Екатеринбург', 'Жилина', 'Загреб', 'Интер', 'Копенгаген', 'Рапид', 'Paok', 'Dortmund', 'Celtic', 'Gent', 'Spartak', 'Rostov', 'Rubin', 'PSG']);
-    // const [teams, setTeams] = useState(['Арсенал', 'Барселона', 'Валенсия', 'Галатасарай', 'Динамо', 'Екатеринбург', 'Жилина', 'Загреб', 'Интер', 'Копенгаген', 'Рапид', 'Paok', 'Dortmund', 'Celtic', 'Gent', 'Spartak', 'Rostov', 'Rubin', 'PSG', 'Man City']);
-    // const [teams, setTeams] = useState(['Арсенал', 'Барселона', 'Валенсия', 'Галатасарай', 'Динамо', 'Екатеринбург', 'Жилина', 'Загреб', 'Интер', 'Копенгаген', 'Рапид', 'Paok', 'Dortmund', 'Celtic', 'Gent', 'Spartak', 'Rostov', 'Rubin', 'PSG', 'Man City', 'Bordeaux']);
-    // const [teams, setTeams] = useState(['Арсенал', 'Барселона', 'Валенсия', 'Галатасарай', 'Динамо', 'Екатеринбург', 'Жилина', 'Загреб', 'Интер', 'Копенгаген', 'Рапид', 'Paok', 'Dortmund', 'Celtic', 'Gent', 'Spartak', 'Rostov', 'Rubin', 'PSG', 'Man City', 'Bordeaux', 'Monaco']);
-    // const [teams, setTeams] = useState(['Арсенал', 'Барселона', 'Валенсия', 'Галатасарай', 'Динамо', 'Екатеринбург', 'Жилина', 'Загреб', 'Интер', 'Копенгаген', 'Рапид', 'Paok', 'Dortmund', 'Celtic', 'Gent', 'Spartak', 'Rostov', 'Rubin', 'PSG', 'Man City', 'Bordeaux', 'Monaco', 'Kamaz']);
-    // const [teams, setTeams] = useState(['Арсенал', 'Барселона', 'Валенсия', 'Галатасарай', 'Динамо', 'Екатеринбург', 'Жилина', 'Загреб', 'Интер', 'Копенгаген', 'Рапид', 'Paok', 'Dortmund', 'Celtic', 'Gent', 'Spartak', 'Rostov', 'Rubin', 'PSG', 'Man City', 'Bordeaux', 'Monaco', 'Kamaz', 'Glazgo']);
-    // const [teams, setTeams] = useState(['Арсенал', 'Барселона', 'Валенсия', 'Галатасарай', 'Динамо', 'Екатеринбург', 'Жилина', 'Загреб', 'Интер', 'Копенгаген', 'Рапид', 'Paok', 'Dortmund', 'Celtic', 'Gent', 'Spartak', 'Rostov', 'Rubin', 'PSG', 'Man City', 'Bordeaux', 'Monaco', 'Kamaz', 'Glazgo', 'Nant']);
-    // const [teams, setTeams] = useState(['Арсенал', 'Барселона', 'Валенсия', 'Галатасарай', 'Динамо', 'Екатеринбург', 'Жилина', 'Загреб', 'Интер', 'Копенгаген', 'Рапид', 'Paok', 'Dortmund', 'Celtic', 'Gent', 'Spartak', 'Rostov', 'Rubin', 'PSG', 'Man City', 'Bordeaux', 'Monaco', 'Kamaz', 'Glazgo', 'Nant', 'Nice']);
-    // const [teams, setTeams] = useState(['Арсенал', 'Барселона', 'Валенсия', 'Галатасарай', 'Динамо', 'Екатеринбург', 'Жилина', 'Загреб', 'Интер', 'Копенгаген', 'Рапид', 'Paok', 'Dortmund', 'Celtic', 'Gent', 'Spartak', 'Rostov', 'Rubin', 'PSG', 'Man City', 'Bordeaux', 'Monaco', 'Kamaz', 'Glazgo', 'Nant', 'Nice', 'Lille']);
+    
+
     const [schedule, setSchedule] = useState([]);
     const [shuffleTeams, setShuffleTeams] = useState(false);
     
@@ -57,31 +59,62 @@ const Krug = () => {
     }
 
    
+    const [name, setName] = useState('')
 
+    
     const addTeam = () => {
         inputRef.current.focus();
+
+        
+        
         
 
-        if (value.trim() !== '') {
-            
-            setValue('');
-            if (teams.map(el => el.toLowerCase().trim()).includes(value.trim().split(/\s+/).join(' '))) {
-                setValue(value.trim().split(/\s+/).join(' '));
+        if (name.trim() !== '') {
+        
+            const found = teams.teams.some(el => el.name.toLowerCase().trim() === name.toLowerCase().trim().split(/\s+/).join(' '));
+            setName('');
+            if (found) {
+                setName(name.trim().split(/\s+/).join(' '));
                 alert('Команда с таким названием уже существует.');
                 return false;
             }
-            setTeams(prevArr => [...prevArr, value.trim().split(/\s+/).join(' ')]);
+
+            createTeam({
+                'name': name
+            })
+
+            
+            fetchTeams().then(data => {
+                setTeamsLen(data.length);
+                teams.setTeams([...data])
+            })
+            
         } else {
-            setValue('');
+            setName('');
+            
             inputRef.current.style.borderColor = "#c00";
+            return false;
         }
+        // if (value.trim() !== '') {
+            
+        //     setValue('');
+        //     if (teams.map(el => el.toLowerCase().trim()).includes(value.trim().split(/\s+/).join(' '))) {
+        //         setValue(value.trim().split(/\s+/).join(' '));
+        //         alert('Команда с таким названием уже существует.');
+        //         return false;
+        //     }
+        //     teams.setTeams(prevArr => [...prevArr, value.trim().split(/\s+/).join(' ')]);
+        // } else {
+        //     setValue('');
+        //     inputRef.current.style.borderColor = "#c00";
+        // }
     }
 
     
 
     const handleChange = e => {
         inputRef.current.style.borderColor = "#ccc";
-        setValue(e.target.value)
+        setName(e.target.value)
     }
 
     const handleRoundChange = e => {
@@ -97,7 +130,7 @@ const Krug = () => {
 
     const clear = () => {
         setValue('');
-        setTeams([]);
+        teams.setTeams([]);
         setSchedule([]);
         setShuffleTeams(false);
     }
@@ -203,7 +236,7 @@ const Krug = () => {
         }
         
         clearColors();
-        if (shuffleTeams) shuffle(teams); 
+        if (shuffleTeams) shuffle(teams.teams); 
         
         const tempo = teams.slice();
         if (tempo.length % 2 !== 0) tempo.unshift(SKIP_TOUR); 
@@ -397,7 +430,7 @@ const Krug = () => {
             if (teams.length < 4) return false;
             return index === teams.indexOf(e.target.parentNode.childNodes[1].textContent) ? teams.splice(index, 1) : false;
         })
-        setTeams([...teams]);
+        teams.setTeams([...teams]);
     }
 
     const handleKeyDown = (event) => {
@@ -418,15 +451,17 @@ const Krug = () => {
         <>
         <h1 className="mt-5 mb-5">{TITLE}</h1>
         <div className="wrapper"> 
-        { teams.length > 0 
+        { teamsLen > 0 
             ? <TeamsList teams={teams} removeTeam={removeTeam}/>
             : null }
             
             <div className="wrapper-container">
-                <div className="container-2">
-                    <input ref={inputRef} onKeyDown={handleKeyDown} type="text" placeholder="Enter the team name" onChange={e => handleChange(e)} value={value}/>
-                    <button className="btn-add" onClick={addTeam} >Add team</button>
-                    { teams.length > 2 
+                <div >
+                    <Form className="container-2">
+                    <input ref={inputRef}  type="text" placeholder="Enter the team name" onChange={e => setName(e.target.value)} value={name}/>
+                    <Button className="btn-add" onClick={addTeam} >Add team</Button>
+                    </Form>
+                    { teamsLen > 2 
                         ? <select required id="round" ref={inputRef2} onChange={e => handleRoundChange(e)} value={numOfRound === 0 || !numOfRound ? "" : numOfRound}>
                             <option defaultValue="" value="">Choose the number of rounds</option>
                             <option value="1">1</option>
@@ -436,15 +471,15 @@ const Krug = () => {
                         </select>
                         : null }
                     
-                    { teams.length > 2 
+                    { teamsLen > 2 
                         ? <button className="generate-btn" onClick={() => scheduler()}>Generate schedule</button>
                         : null }
 
-                    { teams.length > 0 
+                    { teamsLen > 0 
                         ? <button className="clear-btn" onClick={clear}>Clear all</button>
                         : null }
 
-                    { teams.length > 2 
+                    { teamsLen > 2 
                         ?   <div className="save-pdf-container">
                                 <button ref={saveBtnRef} className="save-pdf disabled" onClick={handleExportWithComponent}>Save PDF</button>
                                 {
@@ -481,7 +516,7 @@ const Krug = () => {
                         
                         <PDFExport ref={pdfExportComponent} paperSize="A4" scale={1} landscape={false} mobile={true}>
                             
-                            <div className="schedule" ref={contentArea}>
+                            <div className="schedule mt-5" ref={contentArea}>
                             <h2>Schedule</h2> 
                             {   schedule.map((obj, i) => (
                             <div className="round-wrapper" id={`round-round${i}`} key={`round-round${i}`}>
@@ -552,7 +587,7 @@ const Krug = () => {
         </>
     )
     
-}
+})
 
 
 export default Krug;

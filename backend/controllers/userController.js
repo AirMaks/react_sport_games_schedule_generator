@@ -53,6 +53,11 @@ class UserController {
         return res.json({token});
         
     }
+
+    async getAll(req, res) {
+        const users = await User.findAll();
+        return res.json(users);
+    }
 }
 
 module.exports = new UserController(); 

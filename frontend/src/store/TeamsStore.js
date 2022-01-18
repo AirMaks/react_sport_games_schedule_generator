@@ -3,12 +3,7 @@ import {makeAutoObservable} from "mobx";
 
 export default class TeamsStore {
     constructor() {
-        this._teams = [
-            {id: 1, name: "Real Madrid"},
-            {id: 2, name: "Barcelona"},
-            {id: 3, name: "Atletico"},
-            // {id: 4, name: "MU"}
-        ];
+        this._teams = [];
         makeAutoObservable(this);
     }
 

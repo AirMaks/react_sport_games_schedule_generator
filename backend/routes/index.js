@@ -9,5 +9,6 @@ const teamsRouter = require('./teamsRouter');
 router.use('/user', userRouter);
 router.use('/tournaments', tournamentsRouter);
 router.use('/teams', teamsRouter);
+router.use('/users', userRouter);
 
 module.exports = router;
