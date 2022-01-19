@@ -1,11 +1,11 @@
 import { useState, useRef, useContext, useEffect} from "react";
 import {shuffle, transliterate} from '../helpers';
-import TeamsList from "../components/TeamsList.js";
+import TeamItem from "../components/TeamItem.js";
 import {PDFExport, savePDF} from "@progress/kendo-react-pdf";
 import {isMobile} from 'react-device-detect';
 import Lightbox from "react-image-lightbox";
 import { Context } from "../index";
-import { createTeam, fetchTeams } from "../http/teamsAPI";
+import { createTeam, fetchTeams, removeTeam } from "../http/teamsAPI";
 import Button from 'react-bootstrap/Button'
 import Form from 'react-bootstrap/Form'
 import { observer } from "mobx-react-lite";
@@ -14,7 +14,7 @@ const Krug = observer(() => {
 
     const [value, setValue] = useState('');
     const [numOfRound, setNumOfRound] = useState('');
-
+    const [name, setName] = useState('')
     const {teams} = useContext(Context);
     const [teamsLen, setTeamsLen] = useState(0);
     
@@ -24,7 +24,7 @@ const Krug = observer(() => {
             teams.setTeams([...data]);
             setTeamsLen(data.length);
         })
-    }, []);
+    }, [teams.teams]);
 
     
 
@@ -59,15 +59,11 @@ const Krug = observer(() => {
     }
 
    
-    const [name, setName] = useState('')
+    
 
     
     const addTeam = () => {
         inputRef.current.focus();
-
-        
-        
-        
 
         if (name.trim() !== '') {
         
@@ -82,12 +78,6 @@ const Krug = observer(() => {
             createTeam({
                 'name': name
             })
-
-            
-            fetchTeams().then(data => {
-                setTeamsLen(data.length);
-                teams.setTeams([...data])
-            })
             
         } else {
             setName('');
@@ -95,19 +85,11 @@ const Krug = observer(() => {
             inputRef.current.style.borderColor = "#c00";
             return false;
         }
-        // if (value.trim() !== '') {
-            
-        //     setValue('');
-        //     if (teams.map(el => el.toLowerCase().trim()).includes(value.trim().split(/\s+/).join(' '))) {
-        //         setValue(value.trim().split(/\s+/).join(' '));
-        //         alert('Команда с таким названием уже существует.');
-        //         return false;
-        //     }
-        //     teams.setTeams(prevArr => [...prevArr, value.trim().split(/\s+/).join(' ')]);
-        // } else {
-        //     setValue('');
-        //     inputRef.current.style.borderColor = "#c00";
-        // }
+     
+    }
+
+    const deleteTeam = (id) => {
+        removeTeam(id)
     }
 
     
@@ -424,14 +406,7 @@ const Krug = observer(() => {
     }
 
 
-    const removeTeam = e => {
-        [...teams].map((_, index) => {
-            if (index === -1) return false;
-            if (teams.length < 4) return false;
-            return index === teams.indexOf(e.target.parentNode.childNodes[1].textContent) ? teams.splice(index, 1) : false;
-        })
-        teams.setTeams([...teams]);
-    }
+    
 
     const handleKeyDown = (event) => {
         if (event.key === 'Enter') {
@@ -452,15 +427,26 @@ const Krug = observer(() => {
         <h1 className="mt-5 mb-5">{TITLE}</h1>
         <div className="wrapper"> 
         { teamsLen > 0 
-            ? <TeamsList teams={teams} removeTeam={removeTeam}/>
+            ? <div>
+                <ul className="teams-list">
+                    { teams.teams.map((team, index) => (
+                        // <TeamItem teams={teams.teams} key={team.id} team={team} index={index} />
+                        <li key={team.id}>
+                            <span>{`${index + 1}.`}</span>
+                            <div>{`${team.name}`}</div>
+                            {teamsLen > 3 && <span className="remove-btn" onClick={() => deleteTeam(team.id)}></span>}
+                        </li>
+                    ))}
+                </ul>
+                </div>
             : null }
             
             <div className="wrapper-container">
-                <div >
-                    <Form className="container-2">
+                <div className="container-3">
+                    <div className="container-2">
                     <input ref={inputRef}  type="text" placeholder="Enter the team name" onChange={e => setName(e.target.value)} value={name}/>
                     <Button className="btn-add" onClick={addTeam} >Add team</Button>
-                    </Form>
+                    </div>
                     { teamsLen > 2 
                         ? <select required id="round" ref={inputRef2} onChange={e => handleRoundChange(e)} value={numOfRound === 0 || !numOfRound ? "" : numOfRound}>
                             <option defaultValue="" value="">Choose the number of rounds</option>

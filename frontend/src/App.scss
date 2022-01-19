@@ -191,15 +191,72 @@ ul.teams-list {
     color: #ccc;
   }
 }
-.container-2 {
+
+
+
+.container-3 {
 
   display: flex;
   justify-content: space-between;
   flex-wrap: wrap;
 
+  .container-2 {
+    display: flex;
+    width: 100%; 
+    justify-content: space-between;
+    
+    @media screen and (max-width: 1200px) { 
+      input, button {
+        width: 49%;
+      }
+    }
+
+    @media screen and (max-width: 600px) { 
+      flex-wrap: wrap;
+      input, button {
+        width: 100%;
+      }
+    }
+  }
+
+  .clear-btn {
+    background-color: #f31c1c;
+    color: #fff;
+    text-align: center;
+    display: -webkit-box;
+    display: -ms-flexbox;
+    display: flex;
+    -webkit-box-align: center;
+    -ms-flex-align: center;
+    align-items: center;
+    -webkit-box-pack: center;
+    -ms-flex-pack: center;
+    justify-content: center; 
+  
+    @media screen and (max-width: 1200px) {
+      order: -1;
+      margin-bottom: 50px;
+      max-width: 100px;
+      margin-left: 0;
+      margin-right: auto;
+  }
+  }
+  .generate-btn {
+    color: #fff;
+    background-color: #2078e5;
+  
+   
+  }
+
   @media screen and (max-width: 600px) {
       flex-direction: column;
       align-items: center;
+  }
+
+  .container-2 {
+    
+
+    
   }
 
   .save-pdf-container {
@@ -228,34 +285,7 @@ ul.teams-list {
     }
   }
 
-  .clear-btn {
-    background-color: #f31c1c;
-    color: #fff;
-    text-align: center;
-    display: -webkit-box;
-    display: -ms-flexbox;
-    display: flex;
-    -webkit-box-align: center;
-    -ms-flex-align: center;
-    align-items: center;
-    -webkit-box-pack: center;
-    -ms-flex-pack: center;
-    justify-content: center; 
 
-    @media screen and (max-width: 1200px) {
-      order: -1;
-      margin-bottom: 50px;
-      max-width: 100px;
-      margin-left: 0;
-      margin-right: auto;
-  }
-  }
-  .generate-btn {
-    color: #fff;
-    background-color: #2078e5;
-
-   
-  }
   .use-chrome-container.hidden {
     display: none;
   }

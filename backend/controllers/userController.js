@@ -2,6 +2,8 @@ const ApiError = require('../error/ApiError');
 const bcrypt = require('bcrypt');
 const {User} = require('../models/models');
 const jwt = require('jsonwebtoken');
+
+
 const generateJWT = (id, login, role) => {
     return jwt.sign({id, login, role}, process.env.SECRET_KEY, {expiresIn: '24h'});
 }
