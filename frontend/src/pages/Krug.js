@@ -1,42 +1,29 @@
-import { useState, useRef, useContext, useEffect} from "react";
+import { useState, useRef, useContext, useEffect, Fragment} from "react";
 import {shuffle, transliterate} from '../helpers';
 import TeamItem from "../components/TeamItem.js";
 import {PDFExport, savePDF} from "@progress/kendo-react-pdf";
 import {isMobile} from 'react-device-detect';
 import Lightbox from "react-image-lightbox";
 import { Context } from "../index";
-import { createTeam, fetchTeams, removeTeam } from "../http/teamsAPI";
+import { createTeam, fetchTeams, removeAllTeams, removeTeam } from "../http/teamsAPI";
 import Button from 'react-bootstrap/Button'
-import Form from 'react-bootstrap/Form'
 import { observer } from "mobx-react-lite";
 
 const Krug = observer(() => {
 
-    const [value, setValue] = useState('');
     const [numOfRound, setNumOfRound] = useState('');
     const [name, setName] = useState('')
     const {teams} = useContext(Context);
     const [teamsLen, setTeamsLen] = useState(0);
-    
-    useEffect(() => {
-        fetchTeams().then(data => {
-            
-            teams.setTeams([...data]);
-            setTeamsLen(data.length);
-        })
-    }, [teams.teams]);
-
-    
-
     const [schedule, setSchedule] = useState([]);
     const [shuffleTeams, setShuffleTeams] = useState(false);
     
     const inputRef = useRef(null);
     const inputRef2 = useRef(null);
-    const saveBtnRef = useRef(null);
+    const savePDFBtnRef = useRef(null);
+    const saveTournamentBtnRef = useRef(null);
     const scheduleItems = useRef(null);
     const useChromeRef = useRef(null);
-    const TITLE = "Round - robin tournament schedule generator online";
 
     const images = [
         "img/1.PNG",
@@ -45,22 +32,31 @@ const Krug = observer(() => {
         "img/4.PNG",
         "img/5.PNG",
         "img/6.PNG"
-      ];
+    ];
     const [photoIndex, setPhotoIndex] = useState(0);
     const [isOpen, setIsOpen] = useState(false);
-    const SKIP_TOUR = 'Пропускает тур:';
+    const SKIP_TOUR = 'Пропускает:';
     
  
     const pdfExportComponent = useRef(null);
     const contentArea = useRef(null);
 
-    const handleExportWithComponent = (event) => {
-        savePDF(contentArea.current, {paperSize: "A4", scale: 0.8, margin: { top: 20, left: 25, right: 0, bottom: 20}})
+    const refreshTeams = async () => {
+        await fetchTeams().then(data => {
+            teams.setTeams([...data]);
+            setTeamsLen(data.length);
+        })
     }
 
-   
+    useEffect(() => {
+        refreshTeams();
+    }, []);
+
     
 
+    const handleExportWithComponent = (event) => {
+        savePDF(contentArea.current, {allPages: true,paperSize: "A4", scale: 0.8, margin: { top: "0.5m", left: "2cm", right: "1cm", bottom: "2cm"}})
+    }
     
     const addTeam = () => {
         inputRef.current.focus();
@@ -77,7 +73,8 @@ const Krug = observer(() => {
 
             createTeam({
                 'name': name
-            })
+            }).then(refreshTeams)
+            inputRef.current.style.borderColor = "#ccc";
             
         } else {
             setName('');
@@ -89,10 +86,9 @@ const Krug = observer(() => {
     }
 
     const deleteTeam = (id) => {
-        removeTeam(id)
+        removeTeam(id).then(refreshTeams)
     }
 
-    
 
     const handleChange = e => {
         inputRef.current.style.borderColor = "#ccc";
@@ -110,11 +106,20 @@ const Krug = observer(() => {
         
     }
 
+    const handleKeyDown = (event) => {
+        if (event.key === 'Enter') {
+            if (name.trim() !== '') {
+                addTeam();
+                inputRef.current.style.borderColor = "#ccc";
+            } else {
+                setName('');
+                inputRef.current.style.borderColor = "#c00";
+            }
+        }
+    }
+
     const clear = () => {
-        setValue('');
-        teams.setTeams([]);
-        setSchedule([]);
-        setShuffleTeams(false);
+        removeAllTeams().then(refreshTeams)
     }
 
     const clearColors = () => {
@@ -153,19 +158,19 @@ const Krug = observer(() => {
    
             [...el.childNodes].map(item => {
                 
-                if (item.className === e.target.parentNode.className && item.tagName === 'DIV' && item.previousSibling && !item.previousSibling.classList.contains('propuskaet_tur')) {
+                if (item.className === e.target.parentNode.className && item.tagName === 'DIV' && item.previousSibling && !item.previousSibling.classList.contains('propuskaet')) {
                     item.style.backgroundColor = '#fff';
-                } else if (item.className === e.target.parentNode.className && item.tagName === 'DIV' && item.previousSibling && item.previousSibling.classList.contains('propuskaet_tur')) {
+                } else if (item.className === e.target.parentNode.className && item.tagName === 'DIV' && item.previousSibling && item.previousSibling.classList.contains('propuskaet')) {
                     item.style.backgroundColor = '#ccc';
                 }
 
-                if (item.className === e.target.parentNode.className && item.tagName === 'DIV' && item.nextSibling && !item.nextSibling.classList.contains('propuskaet_tur')) {
+                if (item.className === e.target.parentNode.className && item.tagName === 'DIV' && item.nextSibling && !item.nextSibling.classList.contains('propuskaet')) {
                     item.style.backgroundColor = '#fff';
-                } else if (item.className === e.target.parentNode.className && item.tagName === 'DIV' && item.nextSibling && item.nextSibling.classList.contains('propuskaet_tur')) {
+                } else if (item.className === e.target.parentNode.className && item.tagName === 'DIV' && item.nextSibling && item.nextSibling.classList.contains('propuskaet')) {
                     item.style.backgroundColor = '#ccc';
                 }
 
-                if(e.target.parentNode.classList.contains('propuskaet_tur') && item.className === e.target.parentNode.className) {
+                if(e.target.parentNode.classList.contains('propuskaet') && item.className === e.target.parentNode.className) {
                     item.style.backgroundColor = '#ccc';
                 } 
 
@@ -195,7 +200,6 @@ const Krug = observer(() => {
         });
     }
 
-
     const switchTeams = e => {
         [e.target.parentNode.children[0].children[0].textContent, e.target.parentNode.children[2].children[0].textContent] = [e.target.parentNode.children[2].children[0].textContent, e.target.parentNode.children[0].children[0].textContent];
         [e.target.parentNode.children[0].className, e.target.parentNode.children[2].className] = [e.target.parentNode.children[2].className, e.target.parentNode.children[0].className];
@@ -209,8 +213,12 @@ const Krug = observer(() => {
             return false
         } 
 
-        if (saveBtnRef.current) {
-            saveBtnRef.current.classList.remove('disabled');
+        if (savePDFBtnRef.current) {
+            savePDFBtnRef.current.classList.remove('disabled');
+        }
+
+        if (saveTournamentBtnRef.current) {
+            saveTournamentBtnRef.current.classList.remove('disabled');
         }
 
         if (useChromeRef.current) {
@@ -220,40 +228,41 @@ const Krug = observer(() => {
         clearColors();
         if (shuffleTeams) shuffle(teams.teams); 
         
-        const tempo = teams.slice();
-        if (tempo.length % 2 !== 0) tempo.unshift(SKIP_TOUR); 
+
+        // teams.teams.map(team => console.log(team))
+        const tempo = teams.teams.slice();
+
+        if (tempo.length % 2 !== 0) tempo.unshift({ name: SKIP_TOUR}); 
 
         const away = tempo.splice(tempo.length / 2);
         const home = tempo;
         const round = [];
         const tour = [];
         let pop = [];
-        let tourNum = teams.length / 2;
+        let tourNum = teams.teams.length / 2;
         let tn = 1;
-
 
         for (let n = 0; n < numOfRound; n++) {
 
             for (let i = 0; i < home.length + away.length - 1; i++) {
                     
                 for (let j = 0; j < home.length; j++) {
-                    
                         if (n % 2 === 0) {
 
-                            if (home[j] !== 'Пропускает тур:') {
+                            if (home[j]['name'] !== SKIP_TOUR) {
                                 if (i % 2 === 0) {
                                     round.push({
-                                        home: home[j],
-                                        away: away[j],
-                                        tour: j % tourNum === 0 ? tn : null,
+                                        home: home[j]['name'],
+                                        away: away[j]['name'],
+                                        tour: j % tourNum === 0 && tn,
                                         id: tn,
                                         
                                     });
                                 } else {
                                     round.push({
-                                        home: away[j],
-                                        away: home[j],
-                                        tour: j % tourNum === 0 ? tn : null,
+                                        home: away[j]['name'],
+                                        away: home[j]['name'],
+                                        tour: j % tourNum === 0 && tn,
                                         id: tn,
                                         
                                     });
@@ -261,36 +270,36 @@ const Krug = observer(() => {
                                	
                             } else {
                                 round.push({
-                                    home: home[j],
-                                    away: away[j],
-                                    tour: j % tourNum === 0 ? tn : null,
+                                    home: home[j]['name'],
+                                    away: away[j]['name'],
+                                    tour: j % tourNum === 0 && tn,
                                     id: tn,
                                     
                                 });
                             }
                         } else {
     
-                            if (home[j] === 'Пропускает тур:') {
+                            if (home[j]['name'] === SKIP_TOUR) {
                                 
                                     round.push({
-                                        home: home[j],
-                                        away: away[j],
-                                        tour: j % tourNum === 0 ? tn : null,
+                                        home: home[j]['name'],
+                                        away: away[j]['name'],
+                                        tour: j % tourNum === 0 && tn,
                                         id: tn
                                     });	
                             } else {
                                 if (i % 2 === 0) {
                                     round.push({
-                                        home: away[j],
-                                        away: home[j],
-                                        tour: j % tourNum === 0 ? tn : null,
+                                        home: away[j]['name'],
+                                        away: home[j]['name'],
+                                        tour: j % tourNum === 0 && tn,
                                         id: tn
                                     });	
                                 } else {
                                     round.push({
-                                        home: home[j],
-                                        away: away[j],
-                                        tour: j % tourNum === 0 ? tn : null,
+                                        home: home[j]['name'],
+                                        away: away[j]['name'],
+                                        tour: j % tourNum === 0 && tn,
                                         id: tn
                                     });	
                                 }
@@ -315,20 +324,20 @@ const Krug = observer(() => {
                
             }
 
-       
+            
             pop = round.splice(0, round.length);
             tour.push(pop);
             pop.splice();
             round.splice();
             
-        }
 
+           
+        }
 
         // this is for each team playing home and away equally  
         [...tour].map(el => {
 
             [...el].map((t, i) => {
-
                 if (teams.length === 3) {
                     if (i === 3) {
                         [t.home, t.away] = [t.away, t.home];
@@ -403,73 +412,65 @@ const Krug = observer(() => {
         
         setSchedule([...tour])
         setShuffleTeams(true);
+
+
+       
     }
 
-
-    
-
-    const handleKeyDown = (event) => {
-        if (event.key === 'Enter') {
-            if (value.trim() !== '') {
-                addTeam();
-            } else {
-                setValue('');
-                inputRef.current.style.borderColor = "#c00";
-            }
-        }
+    const saveTournament = () => {
+        schedule.map(el => {
+            console.log(el);
+        })
     }
-      
+    
       
     
-
     return (
         <>
-        <h1 className="mt-5 mb-5">{TITLE}</h1>
+        <h1 className="mt-5 mb-5">Создать турнир</h1>
         <div className="wrapper"> 
-        { teamsLen > 0 
-            ? <div>
+        { teamsLen > 0 &&
+            <div>
                 <ul className="teams-list">
-                    { teams.teams.map((team, index) => (
+                    { teams.teams.map((team, index) => {
+                        return (
                         // <TeamItem teams={teams.teams} key={team.id} team={team} index={index} />
                         <li key={team.id}>
                             <span>{`${index + 1}.`}</span>
                             <div>{`${team.name}`}</div>
                             {teamsLen > 3 && <span className="remove-btn" onClick={() => deleteTeam(team.id)}></span>}
                         </li>
-                    ))}
+                    )})
+}
                 </ul>
-                </div>
-            : null }
+            </div>
+        }
             
             <div className="wrapper-container">
                 <div className="container-3">
                     <div className="container-2">
-                    <input ref={inputRef}  type="text" placeholder="Enter the team name" onChange={e => setName(e.target.value)} value={name}/>
-                    <Button className="btn-add" onClick={addTeam} >Add team</Button>
+                        <input ref={inputRef}  onKeyDown={handleKeyDown} type="text" placeholder="Enter the team name" onChange={e => handleChange(e)} value={name}/>
+                        <Button className="btn-add" onClick={addTeam} >Add team</Button>
                     </div>
-                    { teamsLen > 2 
-                        ? <select required id="round" ref={inputRef2} onChange={e => handleRoundChange(e)} value={numOfRound === 0 || !numOfRound ? "" : numOfRound}>
+                    { teamsLen > 2 &&
+                         <select required id="round" ref={inputRef2} onChange={e => handleRoundChange(e)} value={numOfRound === 0 || !numOfRound ? "" : numOfRound}>
                             <option defaultValue="" value="">Choose the number of rounds</option>
                             <option value="1">1</option>
                             <option value="2">2</option>
                             <option value="3">3</option>
                             <option value="4">4</option>
                         </select>
-                        : null }
+                    }
                     
-                    { teamsLen > 2 
-                        ? <button className="generate-btn" onClick={() => scheduler()}>Generate schedule</button>
-                        : null }
+                    { teamsLen > 2 && <button className="generate-btn" onClick={() => scheduler()}>Генерировать расписание</button> }
 
-                    { teamsLen > 0 
-                        ? <button className="clear-btn" onClick={clear}>Clear all</button>
-                        : null }
-
-                    { teamsLen > 2 
-                        ?   <div className="save-pdf-container">
-                                <button ref={saveBtnRef} className="save-pdf disabled" onClick={handleExportWithComponent}>Save PDF</button>
+                    { teamsLen > 0 && <button className="clear-btn" onClick={clear}>Очистить все</button> }
+                    
+                    { teamsLen > 2 &&
+                           <div className="save-pdf-container">
+                                <button ref={savePDFBtnRef} className="save-pdf disabled" onClick={handleExportWithComponent}>Сохранить PDF</button>
                                 {
-                                    isMobile ? 
+                                    isMobile && 
                                     <div ref={useChromeRef} className="use-chrome-container hidden">
                                     <div className="use-chrome">Use chrome browser and google drive to save PDF</div> 
                                     <button type="button" className="how-to-use" onClick={() => setIsOpen(true)}>How to use google drive?</button> 
@@ -489,83 +490,73 @@ const Krug = observer(() => {
                                     />
                                     )}
                                     </div>
-                                    : null
+                                    
                                 }
                             </div>
-                        : null }
+                    }
+
+                    { teamsLen > 2 && <button ref={saveTournamentBtnRef} className="save-tournament-btn mt-3 disabled" onClick={() => saveTournament()}>Сохранить турнир</button> }
 
 
                     
                 </div> 
-                { schedule.length > 0 ? (
-                        <>
-                        
-                        <PDFExport ref={pdfExportComponent} paperSize="A4" scale={1} landscape={false} mobile={true}>
+                { schedule.length > 0 && (
+                    <>
+                    
+                        <PDFExport ref={pdfExportComponent}>
                             
                             <div className="schedule mt-5" ref={contentArea}>
                             <h2>Schedule</h2> 
-                            {   schedule.map((obj, i) => (
-                            <div className="round-wrapper" id={`round-round${i}`} key={`round-round${i}`}>
-                            {[...Object.values(obj)].map((pair, index) => {
-                                return (
-                                    <>
-                                        {index === 0 ? <div id={`round_${i}_${index}`} className="round" key={`round_${i}_${index}`}>{`${i + 1} круг`}</div> : null }
-                                        {pair.tour !== null ? <div id={`tour_${i}_${index}`} className="tour" key={`tour_${i}_${index}`}>{`${pair.tour} тур`}</div> : null }
+                            { schedule.map((obj, i) => (
+                            <div className="round-wrapper mb-5" id={`round-round${i}`} key={`round-round${i}`}>
+                                {[...Object.values(obj)].map((pair, index) => {
+                                    return (
+                                        <Fragment key={`key_${Math.floor(Math.random() * (10000 - 2) + 2)}`}>
+                                            {index === 0 && <div className="round mb-5" key={`round_${i}_${index}`}>{`${i + 1} круг`}</div>}
+                                            {pair.tour && <div className="tour" key={`tour_${i}_${index}`}>{`${pair.tour} тур`}</div>}
 
-                                        <div 
-                                            id={`${transliterate(pair.home)}_${index}_${pair.tour}`} 
-                                            ref={scheduleItems} 
-                                            className={pair.home === SKIP_TOUR ? 'schedule-item miss' : 'schedule-item pair'}  
-                                            key={`${transliterate(pair.home)}_${index}_${pair.tour}`}
-                                        >
-                                            <div 
-                                                className={`${transliterate(pair.home)}`} 
-                                                id={`${transliterate(pair.home)}_${pair.id}`} 
-                                                key={`${transliterate(pair.home)}_${pair.id}`} 
-                                                onClick={e => colorTeamOnClick(e)}
+                                            <div ref={scheduleItems} 
+                                                className={pair.home === SKIP_TOUR ? 'schedule-item miss' : 'schedule-item pair'}  
+                                                key={`${transliterate(pair.home)}_${index}_${pair.tour}`}
                                             >
-                                                <div 
-                                                    id={`${transliterate(pair.home)}_${pair.id}_DIV`} 
-                                                    key={`${transliterate(pair.home)}_${pair.id}_DIV`}>{pair.home}</div>
-                                                <span 
-                                                    id={`${transliterate(pair.home)}_${pair.id}_SPAN`} 
-                                                    key={`${transliterate(pair.home)}_${pair.id}_SPAN`} 
-                                                    className="color-box" onClick={e => clearColor(e)}></span>
-                                            </div>
-                                            {pair.home === SKIP_TOUR ? null : 
-                                                <span id={`${pair.tour}_span`} key={`${pair.tour}_span`} onClick={e => switchTeams(e)}>
-                                                    <svg id={`${transliterate(pair.home)}${pair.tour}_svg`} key={`${pair.tour}_svg`} height="512" viewBox="0 0 512 512" width="512"><g><path d="m92.69 216c6.23 6.24 16.39 6.24 22.62 0l20.69-20.69c6.24-6.23 6.24-16.39 0-22.62l-20.69-20.69h284.69c26.47 0 48 21.53 48 48 0 13.23 10.77 24 24 24h16c13.23 0 24-10.77 24-24 0-61.76-50.24-112-112-112h-284.69l20.69-20.69c6.24-6.23 6.24-16.39 0-22.62l-20.69-20.69c-6.23-6.24-16.39-6.24-22.62 0l-90.35 90.34c-3.12 3.13-3.12 8.19 0 11.32z"/><path d="m419.31 296c-6.23-6.24-16.38-6.24-22.62 0l-20.69 20.69c-6.252 6.252-6.262 16.358 0 22.62l20.69 20.69h-284.69c-26.47 0-48-21.53-48-48 0-13.23-10.77-24-24-24h-16c-13.23 0-24 10.77-24 24 0 61.76 50.24 112 112 112h284.69l-20.69 20.69c-6.252 6.252-6.262 16.358 0 22.62l20.69 20.69c6.241 6.241 16.38 6.24 22.62 0l90.35-90.34c3.12-3.13 3.12-8.19 0-11.32z"/></g></svg>
-                                                </span>}
                                                 
-                                            <div 
-                                                className={`${transliterate(pair.away)}`} 
-                                                id={`${transliterate(pair.away)}_${pair.id}`} 
-                                                key={`${transliterate(pair.away)}_${pair.id}`} 
-                                                onClick={e => colorTeamOnClick(e)}>
-                                                    <div 
-                                                        id={`${transliterate(pair.away)}_${pair.id}_DIV`}
-                                                        key={`${transliterate(pair.away)}_${pair.id}_DIV`}>{pair.away}</div> 
-                                                    <span 
-                                                        id={`${transliterate(pair.away)}_${pair.id}_SPAN`} 
-                                                        key={`${transliterate(pair.away)}_${pair.id}_SPAN`} 
-                                                        className="color-box" 
-                                                        onClick={e => clearColor(e)}></span>
+                                                <div className={`${transliterate(pair.home)}`} 
+                                                    key={`${transliterate(pair.home)}_${Math.floor(Math.random() * (10000 - 2) + 2)}`} 
+                                                    onClick={e => colorTeamOnClick(e)}
+                                                >
+                                                    <div key={`${transliterate(pair.home)}_${pair.home.id}_${Math.floor(Math.random() * (10000 - 2) + 2)}`}>{pair.home}</div>
+                                                    <span key={`${transliterate(pair.home)}_${pair.home.id}_${Math.floor(Math.random() * (10000 - 2) + 2)}`} 
+                                                        className="color-box" onClick={e => clearColor(e)}></span>
+                                                </div>
+                                                {pair.home !== SKIP_TOUR && 
+                                                    <span key={`${pair.tour}_${Math.floor(Math.random() * (10000 - 2) + 2)}`} onClick={e => switchTeams(e)}>
+                                                        <svg key={`${pair.tour}_${Math.floor(Math.random() * (10000 - 2) + 2)}`} height="512" viewBox="0 0 512 512" width="512"><g><path d="m92.69 216c6.23 6.24 16.39 6.24 22.62 0l20.69-20.69c6.24-6.23 6.24-16.39 0-22.62l-20.69-20.69h284.69c26.47 0 48 21.53 48 48 0 13.23 10.77 24 24 24h16c13.23 0 24-10.77 24-24 0-61.76-50.24-112-112-112h-284.69l20.69-20.69c6.24-6.23 6.24-16.39 0-22.62l-20.69-20.69c-6.23-6.24-16.39-6.24-22.62 0l-90.35 90.34c-3.12 3.13-3.12 8.19 0 11.32z"/><path d="m419.31 296c-6.23-6.24-16.38-6.24-22.62 0l-20.69 20.69c-6.252 6.252-6.262 16.358 0 22.62l20.69 20.69h-284.69c-26.47 0-48-21.53-48-48 0-13.23-10.77-24-24-24h-16c-13.23 0-24 10.77-24 24 0 61.76 50.24 112 112 112h284.69l-20.69 20.69c-6.252 6.252-6.262 16.358 0 22.62l20.69 20.69c6.241 6.241 16.38 6.24 22.62 0l90.35-90.34c3.12-3.13 3.12-8.19 0-11.32z"/></g></svg>
+                                                    </span>
+                                                }
+                                                    
+                                                <div className={`${transliterate(pair.away)}`} 
+                                                    key={`${transliterate(pair.away)}_${Math.floor(Math.random() * (10000 - 2) + 2)}`} 
+                                                    onClick={e => colorTeamOnClick(e)}>
+                                                        <div key={`${transliterate(pair.away)}_${pair.away.id}_${Math.floor(Math.random() * (10000 - 2) + 2)}`}>{pair.away}</div> 
+                                                        <span key={`${transliterate(pair.away)}_${pair.away.id}_${Math.floor(Math.random() * (10000 - 2) + 2)}`} 
+                                                              className="color-box" 
+                                                              onClick={e => clearColor(e)}></span>
+                                                </div>
                                             </div>
-                                        </div>
-                                    </>
-                                )
-                            }
-                            )}
+                                        </Fragment>
+                                    )
+                                }
+                                )}
                             </div>
-                            )) 
-                        }
+                            )) }
                             </div>
 
                             
-                            </PDFExport>
-                            
-                        </>
-                    ) : null }
+                        </PDFExport>
+                        
+                    </>
+                    ) 
+                }
             
             </div>
             

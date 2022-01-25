@@ -12,6 +12,11 @@ export const removeTeam = async (id) => {
     return data
 }
 
+export const removeAllTeams = async () => {
+    const {data} = await $host.delete('/api/teams')
+    return data
+}
+
 export const fetchTeams = async (name) => {
     const {data} = await $host.get('/api/teams', {params: {
             name

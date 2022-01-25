@@ -25,6 +25,11 @@ class TeamsController {
         return res.json(teams);
     }
 
+    async deleteAllTeams(req, res) {
+        const teams = await Teams.destroy({where: {}});
+        return res.json(teams);
+    }
+
     
 }
 

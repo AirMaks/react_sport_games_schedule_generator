@@ -14,7 +14,7 @@ const TeamItem = observer(({team, index}) => {
             teams.setTeams([...data])
             setTeamsLen(data.length);
         })
-    }, [])
+    }, [teams.teams])
     const deleteTeam = (id) => {
         // [...teams].map((_, index) => {
         //     if (index === -1) return false;
