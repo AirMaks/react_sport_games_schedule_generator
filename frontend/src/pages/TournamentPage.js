@@ -1,21 +1,28 @@
-import { useEffect, useState } from "react";
+import { Fragment, useContext, useEffect, useState } from "react";
 import Container from "react-bootstrap/Container";
 import { useParams } from "react-router-dom";
 import { Tab, Tabs, TabList, TabPanel } from 'react-tabs';
 import 'react-tabs/style/react-tabs.css';
-import { fetchOneTournament } from "../http/tournamentsAPI";
+import { Context } from "../index";
+// import { fetchGames } from "../http/gamesAPI";
+import { fetchOneTournament, fetchGames } from "../http/tournamentsAPI";
 
 const TournamentPage = () => {
 
     const [tournament, setTournament] = useState([])
+    // const games = useContext(Context)
+    const [games, setGames] = useState([])
     const {id} = useParams()
 
-    console.log(id);
+//    console.log(games.games);
 
     useEffect(() => {
         fetchOneTournament(id).then(data => setTournament(data))
+        fetchGames(id).then(data => setGames(data))
     }, [])
 
+    
+    // console.log(games);
 
     return (
         
@@ -70,7 +77,23 @@ const TournamentPage = () => {
                     </table>
                 </TabPanel>
                 <TabPanel>
-dfgh
+                    <div className="d-flex">
+                    {
+                        [...games].map((el, i) => {
+                            console.log(i);
+                            return (
+                                <Fragment key={`key_${i}`}>
+                                <div className="d-inline-block mb-4" id={`${el.team_home}`}
+                                 key={`${el.team_home}`}
+                                 >{el.team_home}</div>
+                                <div className="d-inline-block mb-4 ms-3" id={`${el.team_away}`}  
+                                key={`${el.team_away}`}
+                                >{el.team_away}</div><br/>
+                                </Fragment>
+                            )
+                        })
+                    }
+                    </div>
                 </TabPanel>
                 
                 <TabPanel>

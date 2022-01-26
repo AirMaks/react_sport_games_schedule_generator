@@ -1,8 +1,13 @@
 const ApiError = require('../error/ApiError');
+
+const {Games} = require('../models/models');
 const {Tournaments} = require('../models/models');
+
+
+
 class TournamentsController {
     
-    async create(req, res, next) {
+    async createTournament(req, res, next) { 
 
         try {
             const {title} = req.body;
@@ -17,6 +22,26 @@ class TournamentsController {
     async getAll(req, res) {
         const tournaments = await Tournaments.findAll();
         return res.json(tournaments);
+    }
+
+    async getAllGames(req, res, next) {
+
+        try {
+            let {id} = req.params
+        
+            
+            const games = await Games.findAll({where: {tournamentId: id}});
+
+
+      
+            return res.json(games);
+            
+        } catch(e) {
+            next(ApiError.badRequest(e.message))
+        }
+        
+        
+        
     }
 
     async getOne(req, res) {

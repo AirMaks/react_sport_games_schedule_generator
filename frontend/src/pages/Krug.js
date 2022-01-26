@@ -8,8 +8,10 @@ import { Context } from "../index";
 import { createTeam, fetchTeams, removeAllTeams, removeTeam } from "../http/teamsAPI";
 import Button from 'react-bootstrap/Button'
 import { observer } from "mobx-react-lite";
+import { createGame, fetchGames } from "../http/gamesAPI";
+import { createTournament } from "../http/tournamentsAPI";
 
-const Krug = observer(() => {
+const Krug = () => {
 
     const [numOfRound, setNumOfRound] = useState('');
     const [name, setName] = useState('')
@@ -227,13 +229,14 @@ const Krug = observer(() => {
         
         clearColors();
         if (shuffleTeams) shuffle(teams.teams); 
-        
+        // console.log(teams.teams);
 
         // teams.teams.map(team => console.log(team))
         const tempo = teams.teams.slice();
 
         if (tempo.length % 2 !== 0) tempo.unshift({ name: SKIP_TOUR}); 
 
+            
         const away = tempo.splice(tempo.length / 2);
         const home = tempo;
         const round = [];
@@ -417,11 +420,48 @@ const Krug = observer(() => {
        
     }
 
+    // const saveGames = () => {
+    //     [...schedule].map(obj => {
+    //         [...Object.values(obj)].map((pair, index) => {
+    //             createGame({
+    //                 'team_home': pair.home,
+    //                 'team_away': pair.away,
+    //                 'team_home_score': '1',
+    //                 'team_away_score': '0',
+    //             })
+    //         })
+           
+    //     })
+    // }
+    const {games} = useContext(Context)
     const saveTournament = () => {
-        schedule.map(el => {
-            console.log(el);
+        
+        let result = prompt("Введите название турнира", "");
+        createTournament({
+            'title': result,
+        }).then(data => {
+            
+            [...schedule].map((obj, i) => {
+                [...Object.values(obj)].map((pair, index) => {
+                    createGame({
+                        'team_home': pair.home,
+                        'team_away': pair.away,
+                        'team_home_score': '',
+                        'team_away_score': '',
+                        'tournamentId': data.id,
+                        'round': i
+                    })
+                })
+               
+            })
         })
+
     }
+
+    // console.log(schedule);
+    
+
+    
     
       
     
@@ -495,7 +535,7 @@ const Krug = observer(() => {
                             </div>
                     }
 
-                    { teamsLen > 2 && <button ref={saveTournamentBtnRef} className="save-tournament-btn mt-3 disabled" onClick={() => saveTournament()}>Сохранить турнир</button> }
+                    { teamsLen > 2 && <button ref={saveTournamentBtnRef} className="save-tournament-btn mt-3 disabled" onClick={saveTournament}>Сохранить турнир</button> }
 
 
                     
@@ -510,8 +550,10 @@ const Krug = observer(() => {
                             { schedule.map((obj, i) => (
                             <div className="round-wrapper mb-5" id={`round-round${i}`} key={`round-round${i}`}>
                                 {[...Object.values(obj)].map((pair, index) => {
+
+                                    console.log(index);
                                     return (
-                                        <Fragment key={`key_${Math.floor(Math.random() * (10000 - 2) + 2)}`}>
+                                        <Fragment key={index}>
                                             {index === 0 && <div className="round mb-5" key={`round_${i}_${index}`}>{`${i + 1} круг`}</div>}
                                             {pair.tour && <div className="tour" key={`tour_${i}_${index}`}>{`${pair.tour} тур`}</div>}
 
@@ -521,24 +563,34 @@ const Krug = observer(() => {
                                             >
                                                 
                                                 <div className={`${transliterate(pair.home)}`} 
-                                                    key={`${transliterate(pair.home)}_${Math.floor(Math.random() * (10000 - 2) + 2)}`} 
+                                                    //key={`${transliterate(pair.home)}_${Math.floor(Math.random() * (10000 - 2) + 2)}`} 
                                                     onClick={e => colorTeamOnClick(e)}
                                                 >
-                                                    <div key={`${transliterate(pair.home)}_${pair.home.id}_${Math.floor(Math.random() * (10000 - 2) + 2)}`}>{pair.home}</div>
-                                                    <span key={`${transliterate(pair.home)}_${pair.home.id}_${Math.floor(Math.random() * (10000 - 2) + 2)}`} 
+                                                    <div 
+                                                    //key={`${transliterate(pair.home)}_${pair.home.id}_${Math.floor(Math.random() * (10000 - 2) + 2)}`}
+                                                    >{pair.home}</div>
+                                                    <span 
+                                                    //key={`${transliterate(pair.home)}_${pair.home.id}_${Math.floor(Math.random() * (10000 - 2) + 2)}`} 
                                                         className="color-box" onClick={e => clearColor(e)}></span>
                                                 </div>
                                                 {pair.home !== SKIP_TOUR && 
-                                                    <span key={`${pair.tour}_${Math.floor(Math.random() * (10000 - 2) + 2)}`} onClick={e => switchTeams(e)}>
-                                                        <svg key={`${pair.tour}_${Math.floor(Math.random() * (10000 - 2) + 2)}`} height="512" viewBox="0 0 512 512" width="512"><g><path d="m92.69 216c6.23 6.24 16.39 6.24 22.62 0l20.69-20.69c6.24-6.23 6.24-16.39 0-22.62l-20.69-20.69h284.69c26.47 0 48 21.53 48 48 0 13.23 10.77 24 24 24h16c13.23 0 24-10.77 24-24 0-61.76-50.24-112-112-112h-284.69l20.69-20.69c6.24-6.23 6.24-16.39 0-22.62l-20.69-20.69c-6.23-6.24-16.39-6.24-22.62 0l-90.35 90.34c-3.12 3.13-3.12 8.19 0 11.32z"/><path d="m419.31 296c-6.23-6.24-16.38-6.24-22.62 0l-20.69 20.69c-6.252 6.252-6.262 16.358 0 22.62l20.69 20.69h-284.69c-26.47 0-48-21.53-48-48 0-13.23-10.77-24-24-24h-16c-13.23 0-24 10.77-24 24 0 61.76 50.24 112 112 112h284.69l-20.69 20.69c-6.252 6.252-6.262 16.358 0 22.62l20.69 20.69c6.241 6.241 16.38 6.24 22.62 0l90.35-90.34c3.12-3.13 3.12-8.19 0-11.32z"/></g></svg>
+                                                    <span 
+                                                    //key={`${pair.tour}_${Math.floor(Math.random() * (10000 - 2) + 2)}`} onClick={e => switchTeams(e)}
+                                                    >
+                                                        <svg 
+                                                        //</span>key={`${pair.tour}_${Math.floor(Math.random() * (10000 - 2) + 2)}`} 
+                                                        height="512" viewBox="0 0 512 512" width="512"><g><path d="m92.69 216c6.23 6.24 16.39 6.24 22.62 0l20.69-20.69c6.24-6.23 6.24-16.39 0-22.62l-20.69-20.69h284.69c26.47 0 48 21.53 48 48 0 13.23 10.77 24 24 24h16c13.23 0 24-10.77 24-24 0-61.76-50.24-112-112-112h-284.69l20.69-20.69c6.24-6.23 6.24-16.39 0-22.62l-20.69-20.69c-6.23-6.24-16.39-6.24-22.62 0l-90.35 90.34c-3.12 3.13-3.12 8.19 0 11.32z"/><path d="m419.31 296c-6.23-6.24-16.38-6.24-22.62 0l-20.69 20.69c-6.252 6.252-6.262 16.358 0 22.62l20.69 20.69h-284.69c-26.47 0-48-21.53-48-48 0-13.23-10.77-24-24-24h-16c-13.23 0-24 10.77-24 24 0 61.76 50.24 112 112 112h284.69l-20.69 20.69c-6.252 6.252-6.262 16.358 0 22.62l20.69 20.69c6.241 6.241 16.38 6.24 22.62 0l90.35-90.34c3.12-3.13 3.12-8.19 0-11.32z"/></g></svg>
                                                     </span>
                                                 }
                                                     
                                                 <div className={`${transliterate(pair.away)}`} 
-                                                    key={`${transliterate(pair.away)}_${Math.floor(Math.random() * (10000 - 2) + 2)}`} 
+                                                    //key={`${transliterate(pair.away)}_${Math.floor(Math.random() * (10000 - 2) + 2)}`} 
                                                     onClick={e => colorTeamOnClick(e)}>
-                                                        <div key={`${transliterate(pair.away)}_${pair.away.id}_${Math.floor(Math.random() * (10000 - 2) + 2)}`}>{pair.away}</div> 
-                                                        <span key={`${transliterate(pair.away)}_${pair.away.id}_${Math.floor(Math.random() * (10000 - 2) + 2)}`} 
+                                                        <div 
+                                                        //key={`${transliterate(pair.away)}_${pair.away.id}_${Math.floor(Math.random() * (10000 - 2) + 2)}`}
+                                                        >{pair.away}</div> 
+                                                        <span 
+                                                        //key={`${transliterate(pair.away)}_${pair.away.id}_${Math.floor(Math.random() * (10000 - 2) + 2)}`} 
                                                               className="color-box" 
                                                               onClick={e => clearColor(e)}></span>
                                                 </div>
@@ -564,7 +616,7 @@ const Krug = observer(() => {
         </>
     )
     
-})
+}
 
 
 export default Krug;

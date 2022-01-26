@@ -6,6 +6,7 @@ import UserStore from './store/UserStore';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import UsersStore from './store/UsersStore';
 import TournamentsStore from './store/TournamentsStore';
+import GamesStore from './store/GamesStore';
 
 
 export const Context = createContext(null);
@@ -17,6 +18,7 @@ ReactDOM.render(
     teams: new TeamsStore(),
     tournaments: new TournamentsStore(),
     users: new UsersStore(),
+    games: new GamesStore(),
   }}>
     <React.StrictMode>
       <App />

@@ -21,21 +21,23 @@ import {
 
 export const authRoutes = [
     {
-        path: ADMIN_ROUTE,
-        Component: Admin
+        path: MENU_ROUTE,
+        Component: Menu
     },
     {
-        path: TOURNAMENTS_ROUTE + '/:id',
-        Component: TournamentPage
+        path: ADMIN_ROUTE,
+        Component: Admin
     },
     {
         path: TOURNAMENTS_ROUTE,
         Component: TournamentsPage
     },
     {
-        path: MENU_ROUTE,
-        Component: Menu
+        path: TOURNAMENTS_ROUTE + '/:id',
+        Component: TournamentPage
     },
+    
+    
     
 ];
 
@@ -48,9 +50,29 @@ export const publicRoutes = [
         Component: Menu
     },
     {
+        path: ADMIN_ROUTE,
+        Component: Admin
+    },
+    {
+        path: TOURNAMENTS_ROUTE,
+        Component: TournamentsPage
+    },
+    {
+        path: TOURNAMENTS_ROUTE + '/:id',
+        Component: TournamentPage
+    },
+    {
         path: KRUG_ROUTE,
         Component: Krug
     },
+    // {
+    //     path: "/games",
+    //     Component: Krug
+    // },
+    // {
+    //     path: "/games",
+    //     Component: TournamentPage
+    // },
     {
         path: LOGIN_ROUTE,
         Component: Auth

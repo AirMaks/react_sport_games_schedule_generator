@@ -53,10 +53,11 @@ const Schedules = sequelize.define('schedules', {
 
 const Games = sequelize.define('games', {
     id: {type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true},
-    team_home: {type: DataTypes.STRING, allowNull: false},
-    team_away: {type: DataTypes.STRING, allowNull: false},
-    team_home_score: {type: DataTypes.STRING, allowNull: false},
-    team_away_score: {type: DataTypes.STRING, allowNull: false},
+    team_home: {type: DataTypes.STRING, allowNull: true},
+    team_away: {type: DataTypes.STRING, allowNull: true},
+    team_home_score: {type: DataTypes.STRING, allowNull: true},
+    team_away_score: {type: DataTypes.STRING, allowNull: true},
+    round: {type: DataTypes.STRING, allowNull: true},
 })
 
 const GameStats = sequelize.define('game_stats', {
@@ -119,8 +120,12 @@ Players.belongsTo(Teams)
 Players.hasOne(PlayerStats)
 PlayerStats.belongsTo(Players)
 
-Schedules.hasMany(Games)
-Games.belongsTo(Schedules)
+// Schedules.hasMany(Games)
+// Games.belongsTo(Schedules)
+
+
+Tournaments.hasMany(Games) 
+Games.belongsTo(Tournaments)
 
 GameStats.hasOne(GameInfos)
 GameInfos.belongsTo(GameStats)
@@ -144,6 +149,7 @@ module.exports = {
     User,
     Tournaments,
     Teams,
+    Games,
     Players,
     PlayerStats,
     PlayerRoles,
